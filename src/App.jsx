@@ -1,18 +1,27 @@
+import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import PhotoGallery from "./components/PhotoGallery";
+import TavioCoinPage from "./components/TavioCoinPage";
+import PhotoGalleryPage from "./components/PhotoGalleryPage";
 
 export default function App() {
 	return (
-		<div className="min-h-screen  bg-zinc-950 text-white">
+		<div className="min-h-screen bg-gray-50 text-gray-900">
 			<Navbar />
-			
-			<div className="pt-20 text-center">
-				<h1 className="text-4xl font-bold">Bienvenido</h1>
-				<text className="text-lg mt-4 block">Un apartado de bites en el internet para mostrar mis cosas</text>
-			</div>
-			
-		
-			<PhotoGallery />
+
+			<Routes>
+				<Route path="/" element={<Home />} />
+				<Route path="/taviocoin" element={<TavioCoinPage />} />
+				<Route path="/fotos" element={<PhotoGalleryPage />} />
+			</Routes>
+		</div>
+	);
+}
+
+function Home() {
+	return (
+		<div className="p-6">
+			<h1 className="text-2xl font-bold mb-2">Bienvenido al Playroom</h1>
+			<p className="text-gray-600">Usá la barra superior para navegar a TavioCoin o Fotos.</p>
 		</div>
 	);
 }

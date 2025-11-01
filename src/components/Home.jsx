@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export default function Home() {
 	const items = [
 		{ name: "TavioCoin", image: "/images/coin.png", path: "/taviocoin" },
-		{ name: "Fotos", image: "/images/foto1.JPG", path: "/fotos" },
+		{ name: "Fotos", image: "/images/foto2.JPG", path: "/fotos" },
 	];
 
 	// Repetimos 3 veces cada uno para llenar el tablero

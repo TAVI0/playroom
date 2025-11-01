@@ -29,27 +29,6 @@ export default function Navbar() {
         </h1>
 
         <ul className="flex gap-6 text-sm items-center">
-			<li>
-				<Link
-					to="/fotos"
-					className={`hover:text-blue-400 ${
-					location.pathname === "/fotos" ? "text-blue-400 underline" : ""
-					}`}
-				>
-				Fotos
-				</Link>
-			</li>
-            <li>
-            <Link
-              to="/taviocoin"
-              className={`hover:text-blue-400 ${
-                location.pathname === "/taviocoin" ? "text-blue-400 underline" : ""
-              }`}
-            >
-              TavioCoin
-            </Link>
-          </li>
-
           <li>
             <button className="hover:text-blue-400" onClick={(e) => handleOpen(e, "social")}>
               Redes

@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import TavioCoinPage from "./components/TavioCoinPage";
 import PhotoGalleryPage from "./components/PhotoGalleryPage";
+import Home from "./components/Home";
 
 export default function App() {
 	return (
@@ -17,11 +18,3 @@ export default function App() {
 	);
 }
 
-function Home() {
-	return (
-		<div className="p-6">
-			<h1 className="text-2xl font-bold mb-2">Bienvenido al Playroom</h1>
-			<p className="text-gray-600">Usá la barra superior para navegar a TavioCoin o Fotos.</p>
-		</div>
-	);
-}

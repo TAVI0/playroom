@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { ethers } from "ethers";
 import contractAbi from "../abi/TavioCoinABI.json";
+import TokenInfo from "./TokenInfo";
 
 const CONTRACT_ADDRESS = "0x9f05aB363f0978b621f97a8141e7Fee6CF6a1c3C";
 const TOKEN_SYMBOL = "TAV";
 const TOKEN_DECIMALS = 18;
-const TOKEN_IMAGE = "https://i.ibb.co/F4FyDnN/tavio.png";
+const TOKEN_IMAGE = "public/images/coin.png"; // reemplazar luego por el gif del token girando 
 
 export default function TavioCoinPage() {
 	const [account, setAccount] = useState(null);
@@ -40,7 +41,7 @@ export default function TavioCoinPage() {
 		}
 	}
 
-	// Agregar token a MetaMask
+	// Agregar token a MetaMask (click en el gif)
 	async function addTokenToMetaMask() {
 		try {
 			if (!window.ethereum) return alert("Necesitás tener MetaMask instalada.");
@@ -58,7 +59,7 @@ export default function TavioCoinPage() {
 				},
 			});
 
-			alert(wasAdded ? "✅ TavioCoin agregado a tu MetaMask" : "❌ Acción cancelada");
+			alert(wasAdded ? "🦊 TavioCoin agregado a tu MetaMask" : "❌ Acción cancelada");
 		} catch (error) {
 			console.error(error);
 			alert("Ocurrió un error al intentar agregar el token.");
@@ -66,65 +67,79 @@ export default function TavioCoinPage() {
 	}
 
 	return (
-		<div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#0b0c10] to-[#16181d] text-white px-6 py-16">
-			{/* Card principal */}
-			<div className="max-w-md w-full bg-[#1c1e24] p-8 rounded-3xl shadow-lg text-center border border-gray-700">
-				<img
-					src={TOKEN_IMAGE}
-					alt="TavioCoin Logo"
-					className="mx-auto w-24 h-24 rounded-full border border-gray-600 shadow-md mb-6"
-				/>
-				<h1 className="text-3xl font-bold mb-2 text-white">TavioCoin Launchpad</h1>
-				<p className="text-gray-400 mb-6">
-					Reclamá tus TavioCoins en la red <span className="text-purple-400">Polygon Amoy</span>
-				</p>
+		<div className="min-h-screen w-full bg-gradient-to-r from-black via-[#0b0c10] to-green-900 flex flex-col justify-center items-center text-white relative overflow-hidden px-6 py-16">
+			<div className="max-w-6xl w-full grid md:grid-cols-2 gap-12 items-center">
+				{/* Sección izquierda: texto promocional */}
+				<div className="text-left space-y-6">
+					<h1 className="text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-200">
+						TAVIOCOIN
+					</h1>
+					<h2 className="text-2xl text-green-300 font-medium">
+						El token del momento
+					</h2>
 
-				{/* Botones */}
-				<div className="flex flex-col gap-3">
-					<button
-						onClick={connectWallet}
-						className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 transition font-semibold"
-					>
-						{account ? `Conectado: ${account.slice(0, 6)}...` : "🔗 Conectar Wallet"}
-					</button>
+					<p className="text-gray-300 leading-relaxed max-w-md">
+						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+						Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+					</p>
 
-					<button
-						onClick={claimTokens}
-						disabled={!account || isClaiming}
-						className={`w-full py-3 rounded-xl font-semibold transition ${
-							!account
-								? "bg-gray-600 opacity-60 cursor-not-allowed"
-								: "bg-green-600 hover:bg-green-700"
-						}`}
-					>
-						{isClaiming ? "⏳ Reclamando..." : "💰 Claim TavioCoin"}
-					</button>
-
-					<button
-						onClick={addTokenToMetaMask}
-						disabled={!account}
-						className={`w-full py-3 rounded-xl font-semibold transition ${
-							!account
-								? "bg-gray-600 opacity-60 cursor-not-allowed"
-								: "bg-yellow-500 hover:bg-yellow-600 text-black"
-						}`}
-					>
-						🦊 Agregar TavioCoin a MetaMask
-					</button>
+					<p className="text-xs text-gray-500 mt-6 max-w-sm">
+						⚠️ Lorem ipsum de advertencia de bromis eiusmod tempor incididunt ut labore et dolore magna aliqua.
+						Ut enim ad minim veniam, quis nostrud exercitation. 
+					</p>
 				</div>
 
-				{/* Estado */}
-				{status && (
-					<p
-						className={`mt-6 text-sm ${
-							status.includes("✅") ? "text-green-400" : status.includes("❌") ? "text-red-400" : "text-gray-300"
+				{/* Sección derecha: token + botón */}
+				<div className="flex flex-col items-center justify-center text-center space-y-6">
+					<img
+						src={TOKEN_IMAGE}
+						alt="TavioCoin"
+						className="w-56 h-56 rounded-full cursor-pointer hover:scale-105 transition-transform duration-300 shadow-[0_0_25px_5px_rgba(16,185,129,0.4)]"
+						onClick={addTokenToMetaMask}
+					/>
+
+					{/* Botón principal */}
+					<button
+						onClick={account ? claimTokens : connectWallet}
+						disabled={isClaiming}
+						className={`px-8 py-3 rounded-2xl font-semibold transition text-lg ${
+							isClaiming
+								? "bg-gray-700 opacity-60 cursor-not-allowed"
+								: "bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-800/40"
 						}`}
 					>
-						{status}
-					</p>
-				)}
+						{isClaiming
+							? "⏳ Reclamando..."
+							: account
+							? "💰 Claim TavioCoin"
+							: "🔗 Conectar Wallet"}
+					</button>
+
+					{/* Dirección */}
+					{account && (
+						<p className="text-gray-400 text-sm">
+							Wallet: <span className="text-green-300">{account.slice(0, 6)}...{account.slice(-4)}</span>
+						</p>
+					)}
+
+					{/* Estado */}
+					{status && (
+						<p
+							className={`text-sm ${
+								status.includes("✅")
+									? "text-green-400"
+									: status.includes("❌")
+									? "text-red-400"
+									: "text-gray-300"
+							}`}
+						>
+							{status}
+						</p>
+					)}
+				</div>
 			</div>
-			
+    	<TokenInfo />
+
 		</div>
 	);
 }

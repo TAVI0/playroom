@@ -92,7 +92,7 @@ export default function SocialModal({ open, onClose, clickPos }) {
 							</li>
 							<li>
 								LinkedIn:{" "}
-								<a href="https://https://www.linkedin.com/in/mtavio/" target="_blank" className="text-blue-400 underline">
+								<a href="https://www.linkedin.com/in/mtavio/" target="_blank" className="text-blue-400 underline">
 									Marcos Tavio
 								</a>
 							</li>

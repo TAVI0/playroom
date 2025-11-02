@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { ethers } from "ethers";
 import contractAbi from "../abi/TavioCoinABI.json";
-import TokenInfo from "./TokenInfo";
 
 const CONTRACT_ADDRESS = "0x9f05aB363f0978b621f97a8141e7Fee6CF6a1c3C";
 const TOKEN_SYMBOL = "TAV";
@@ -75,17 +74,16 @@ export default function TavioCoinPage() {
 						TAVIOCOIN
 					</h1>
 					<h2 className="text-2xl text-green-300 font-medium">
-						El token del momento
+						Reclama gratis el token del momento
 					</h2>
 
 					<p className="text-gray-300 leading-relaxed max-w-md">
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-						Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+						El token del que esta hablando todo el mundo. El que resuena por las calles y que esta en boca de la gente.
+						No te quedes afuera y sé parte de esta revolución tokenizante.
 					</p>
 
 					<p className="text-xs text-gray-500 mt-6 max-w-sm">
-						⚠️ Lorem ipsum de advertencia de bromis eiusmod tempor incididunt ut labore et dolore magna aliqua.
-						Ut enim ad minim veniam, quis nostrud exercitation. 
+						⚠️ No se garantinza ninguna revolucion tokenizante. 
 					</p>
 				</div>
 
@@ -138,7 +136,9 @@ export default function TavioCoinPage() {
 					)}
 				</div>
 			</div>
+			{/* Componente TokenInfo 
     	<TokenInfo />
+			*/}
 
 		</div>
 	);

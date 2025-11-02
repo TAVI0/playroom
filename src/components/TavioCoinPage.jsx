@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ethers } from "ethers";
-import TavioCoinABI from "../abi/TavioCoinABI.json";
+import TavioCoinABI from "../abi/tavioCoinABI.json";
 
 const CONTRACT_ADDRESS = "0x9f05aB363f0978b621f97a8141e7Fee6CF6a1c3C";
 const TOKEN_SYMBOL = "TAV";

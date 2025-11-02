@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ethers } from "ethers";
-import contractAbi from "../abi/TavioCoinABI.json";
+import TavioCoinABI from "../abi/TavioCoinABI.json";
 
 const CONTRACT_ADDRESS = "0x9f05aB363f0978b621f97a8141e7Fee6CF6a1c3C";
 const TOKEN_SYMBOL = "TAV";
@@ -27,7 +27,7 @@ export default function TavioCoinPage() {
 			setStatus("🚀 Ejecutando transacción...");
 			const provider = new ethers.BrowserProvider(window.ethereum);
 			const signer = await provider.getSigner();
-			const contract = new ethers.Contract(CONTRACT_ADDRESS, contractAbi, signer);
+			const contract = new ethers.Contract(CONTRACT_ADDRESS, TavioCoinABI, signer);
 
 			const tx = await contract.claim();
 			await tx.wait();

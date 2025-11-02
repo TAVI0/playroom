@@ -5,11 +5,12 @@ import photos from "../data/photos.json";
 
 export default function Home() {
 	const [currentPhoto, setCurrentPhoto] = useState(0);
+    const IMAGE_TIME = 4000;
 
 	useEffect(() => {
 		const interval = setInterval(() => {
 			setCurrentPhoto((prev) => (prev + 1) % photos.length);
-		}, 4000); // cambia cada 2.5s
+		}, IMAGE_TIME); 
 		return () => clearInterval(interval);
 	}, []);
 

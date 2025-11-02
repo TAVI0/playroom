@@ -1,15 +1,7 @@
 import { useState } from "react";
+import photos from "../data/photos.json"; // Ajustá la ruta según tu estructura
 
 export default function PhotoGalleryPage() {
-	const photos = [
-		"/images/foto2.JPG",
-		"/images/foto3.JPG",
-		"/images/foto4.JPG",
-		"/images/foto5.JPG",
-		"/images/foto6.JPG",
-		"/images/foto7.JPG",
-	];
-
 	const [lightboxOpen, setLightboxOpen] = useState(false);
 	const [currentPhoto, setCurrentPhoto] = useState(null);
 
@@ -29,7 +21,10 @@ export default function PhotoGalleryPage() {
 
 			<div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-5xl w-full">
 				{photos.map((src, i) => (
-					<div key={i} className="overflow-hidden rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 cursor-pointer">
+					<div
+						key={i}
+						className="overflow-hidden rounded-lg shadow-lg hover:scale-105 transition-transform duration-200 cursor-pointer"
+					>
 						<img
 							src={src}
 							alt={`Foto ${i + 1}`}

@@ -5,7 +5,7 @@ import TavioCoinABI from "../abi/tavioCoinABI.json";
 const CONTRACT_ADDRESS = "0x9f05aB363f0978b621f97a8141e7Fee6CF6a1c3C";
 const TOKEN_SYMBOL = "TAV";
 const TOKEN_DECIMALS = 18;
-const TOKEN_IMAGE = "public/images/coin.png"; // reemplazar luego por el gif del token girando 
+const TOKEN_IMAGE = "https://imgur.com/UDnfIkB.png"; // reemplazar luego por el gif del token girando 
 
 export default function TavioCoinPage() {
 	const [account, setAccount] = useState(null);

@@ -1,12 +1,23 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import photos from "../data/photos.json";
 
 export default function Home() {
+	const [currentPhoto, setCurrentPhoto] = useState(0);
+
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setCurrentPhoto((prev) => (prev + 1) % photos.length);
+		}, 4000); // cambia cada 2.5s
+		return () => clearInterval(interval);
+	}, []);
+
 	const items = [
-		{ name: "TavioCoin", image: "/images/coin.png", path: "/taviocoin" },
-		{ name: "Fotos", image: "/images/foto2.JPG", path: "/fotos" },
+		{ name: "TavioCoin", image: "https://imgur.com/UDnfIkB.png", path: "/taviocoin" },
+		{ name: "Fotos", image: photos[currentPhoto], path: "/fotos" },
 	];
 
-	// Repetimos 3 veces cada uno para llenar el tablero
 	const projects = [...items, ...items, ...items];
 
 	return (
@@ -18,11 +29,21 @@ export default function Home() {
 						to={item.path}
 						className="group relative rounded-2xl overflow-hidden bg-[#1a1a1a] shadow-md hover:shadow-xl transform hover:scale-[1.03] transition-all duration-300"
 					>
-						<img
-							src={item.image}
-							alt={item.name}
-							className="w-full h-48 object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300"
-						/>
+						<div className="relative w-full h-48">
+							<AnimatePresence mode="wait">
+								<motion.img
+									key={item.name === "Fotos" ? item.image : item.name + index}
+									src={item.image}
+									alt={item.name}
+									className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100"
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0 }}
+									transition={{ duration: 1, ease: "easeInOut" }}
+								/>
+							</AnimatePresence>
+						</div>
+
 						<div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
 						<div className="absolute bottom-0 p-4 text-white font-semibold text-lg">
 							{item.name}

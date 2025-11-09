@@ -17,7 +17,7 @@ export default function Home() {
 	const items = [
 		{ name: "TavioCoin", image: "https://imgur.com/UDnfIkB.png", path: "/taviocoin" },
 		{ name: "Fotos", image: photos[currentPhoto], path: "/fotos" },
-        { name: "TaskTrack", image: "https://imgur.com/cmXKarM.png", path: "https://tasktrackapp.vercel.app" },
+        { name: "TaskTrack", image: "https://imgur.com/cmXKarM.png", path: "/tasktrack" },
 	];
 
 	const projects = [...items];

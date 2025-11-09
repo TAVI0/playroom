@@ -47,8 +47,8 @@ export default function Home() {
       {/* Sección de música */}
       <div className="w-full max-w-2xl flex flex-col sm:flex-row items-center justify-between bg-[#1a1a1a] rounded-2xl p-6 shadow-md mb-14">
         <div className="text-center sm:text-left mb-4 sm:mb-0 flex-1">
-          <h2 className="text-3xl font-semibold text-white mb-2">
-            Música que estoy escuchando
+          <h2 className="text-4xl font-semibold text-white mb-2">
+            Que estoy escuchando
           </h2>
         {/*  
             <p className="text-gray-400 text-sm">

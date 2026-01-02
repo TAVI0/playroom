@@ -23,6 +23,20 @@ export default function TaskTrackPage() {
 					Crea listas, marca tus pendientes completados y visualiza tu progreso sin
 					complicaciones.
 				</p>
+				{/* Tecnologías */}
+				<div className="max-w-md mb-8 text-gray-400 text-sm">
+					<p className="font-semibold text-gray-300 mb-2">
+						Tecnologías utilizadas
+					</p>
+					<ul className="space-y-1">
+						<li>• Frontend: TypeScript + React</li>
+						<li>• Backend: Java + Spring Boot</li>
+						<li>• Base de datos: PostgreSQL</li>
+						<li>• Infraestructura: AWS (RDS para la BBDD, ECS para el backend)</li>
+						<li>• Contenedorización: Docker</li>
+					</ul>
+				</div>
+
 				<Link
 					to="https://tasktrackapp.vercel.app"
 					className="bg-gray-100 text-gray-900 px-6 py-3 rounded-xl font-medium hover:bg-white transition"

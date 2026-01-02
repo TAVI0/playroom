@@ -18,6 +18,11 @@ export default function PhotoGalleryPage() {
 	return (
 		<div className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-[#0f0f12] to-[#1b1c22] text-gray-100 flex flex-col items-center py-12 px-6">
 			<h2 className="text-3xl font-bold mb-8 text-center text-white">Galería de Fotos</h2>
+				<div className="max-w-md mb-8 text-gray-400 text-sm">
+					<p className="font-semibold text-gray-300 mb-2">
+						Imagenes alojadas en AWS S3
+					</p>
+				</div>
 
 			<div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-5xl w-full">
 				{photos.map((src, i) => (

@@ -27,6 +27,11 @@ export default function Home() {
       image: "https://imgur.com/cmXKarM.png",
       path: "/tasktrack",
     },
+    {
+      name: "BookMark",
+      image: "https://imgur.com/ZcRTRRr.png",
+      path: "/bookmark",
+    },
   ];
 
   const projects = [...items];

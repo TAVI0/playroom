@@ -4,16 +4,35 @@ import ContactModal from "./ContactModal";
 import SocialModal from "./SocialModal";
 import ProjectsWindow from "./ProjectsWindow";
 import CVWindow from "./CVWindow";
+import WelcomeWindow from "./WelcomeWindow";
+import AboutMeWindow from "./AboutMeWindow";
 import Clippy from "./Clippy";
 import { useWindows } from "../context/WindowsContext";
 
 const SOCIAL_WIDTH = 320;
+const WELCOME_WIDTH = 640;
+const ABOUT_WIDTH = 500;
+const PROJECTS_WIDTH = 640;
 const TOP_ALIGN_Y = 24; // misma altura que la ventana "Bienvenido.exe"
+const ABOUT_ALIGN_Y = 210; // debajo de Bienvenido (separación de 42px: 168 de alto + 42 de gap)
+const WINDOW_GAP = ABOUT_ALIGN_Y - 168; // misma separación que hay entre Bienvenido y AboutMe
+const PROJECTS_ALIGN_Y = 494 + WINDOW_GAP; // debajo de AboutMe (alto real: 284, termina en 494)
 
 export default function Navbar() {
   const [showContact, setShowContact] = useState(false);
   const [clock, setClock] = useState("");
-  const { showSocial, toggleSocial, showProjects, toggleProjects, showCV, toggleCV } = useWindows();
+  const {
+    showWelcome,
+    toggleWelcome,
+    showAboutMe,
+    toggleAboutMe,
+    showSocial,
+    toggleSocial,
+    showProjects,
+    toggleProjects,
+    showCV,
+    toggleCV,
+  } = useWindows();
 
   useEffect(() => {
     const update = () =>
@@ -33,6 +52,24 @@ export default function Navbar() {
         >
           🪟 Tavio's Playroom
         </Link>
+
+        <button
+          onClick={toggleWelcome}
+          className={`flex items-center gap-1 px-2 py-1 text-sm ${
+            showWelcome ? "win95-btn-pressed" : "win95-btn"
+          }`}
+        >
+          🖥️ Bienvenido
+        </button>
+
+        <button
+          onClick={toggleAboutMe}
+          className={`flex items-center gap-1 px-2 py-1 text-sm ${
+            showAboutMe ? "win95-btn-pressed" : "win95-btn"
+          }`}
+        >
+          🧑‍💻 AboutMe
+        </button>
 
         <button
           onClick={toggleCV}
@@ -65,6 +102,11 @@ export default function Navbar() {
       </nav>
 
       <ContactModal open={showContact} onClose={() => setShowContact(false)} clickPos={{ x: 0, y: 0 }} />
+      <WelcomeWindow
+        open={showWelcome}
+        onClose={toggleWelcome}
+        initialPos={{ x: Math.max((window.innerWidth - WELCOME_WIDTH) / 2, 16), y: TOP_ALIGN_Y }}
+      />
       <SocialModal
         open={showSocial}
         onClose={toggleSocial}
@@ -75,7 +117,14 @@ export default function Navbar() {
         onClose={toggleCV}
         initialPos={{ x: 24, y: TOP_ALIGN_Y }}
       />
-      <ProjectsWindow />
+      <ProjectsWindow
+        initialPos={{ x: Math.max((window.innerWidth - PROJECTS_WIDTH) / 2, 16), y: PROJECTS_ALIGN_Y }}
+      />
+      <AboutMeWindow
+        open={showAboutMe}
+        onClose={toggleAboutMe}
+        initialPos={{ x: Math.max((window.innerWidth - ABOUT_WIDTH) / 2, 16), y: ABOUT_ALIGN_Y }}
+      />
       <Clippy />
     </>
   );

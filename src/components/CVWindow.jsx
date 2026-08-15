@@ -68,6 +68,14 @@ export default function CVWindow({ open, onClose, initialPos }) {
 					}}
 					className="win95-window fixed z-40 w-[92vw] p-[3px] font-win95 select-none"
 					style={{ top: 0, left: 0, maxWidth: WINDOW_WIDTH }}
+					onMouseEnter={() => {
+						setClippyMood("reading");
+						setClippyMessage("¿Algo que te llame la atención?");
+					}}
+					onMouseLeave={() => {
+						setClippyMood("idle");
+						setClippyMessage(null);
+					}}
 				>
 					{/* Barra de título */}
 					<div className="win95-titlebar cursor-move" onMouseDown={handleMouseDown}>
@@ -111,11 +119,11 @@ export default function CVWindow({ open, onClose, initialPos }) {
 							download="Marcos Tavio CV.pdf"
 							onMouseEnter={() => {
 								setClippyMood("download");
-								setClippyMessage("¿Te llevás una copia? ⛏️");
+								setClippyMessage("¿Te llevás una copia?");
 							}}
 							onMouseLeave={() => {
-								setClippyMood("idle");
-								setClippyMessage(null);
+								setClippyMood("reading");
+								setClippyMessage("¿Algo que te llame la atención?");
 							}}
 							onClick={triggerCVDownload}
 							className="win95-btn px-4 py-1 text-sm font-win95"

@@ -12,18 +12,20 @@ const getCenteredPos = () => ({
 	y: Math.max((window.innerHeight - WINDOW_HEIGHT) / 2, 16),
 });
 
-export default function ProjectsWindow() {
-	const { showProjects, closeProjects, setClippyMessage } = useWindows();
+export default function ProjectsWindow({ initialPos }) {
+	const { showProjects, closeProjects, setClippyMessage, setClippyMood } = useWindows();
 	const modalRef = useRef(null);
-	const [pos, setPos] = useState(getCenteredPos);
+	const getInitialPos = () => initialPos || getCenteredPos();
+	const [pos, setPos] = useState(getInitialPos);
 	const [dragging, setDragging] = useState(false);
 	const [offset, setOffset] = useState({ x: 0, y: 0 });
 	const [selected, setSelected] = useState(null);
 	const [openWindows, setOpenWindows] = useState([]);
 
-	// Al reabrirla, siempre vuelve al centro (ignora dónde la dejó el usuario)
+	// Al reabrirla, siempre vuelve a su posición original (ignora dónde la dejó el usuario)
 	useEffect(() => {
-		if (showProjects) setPos(getCenteredPos());
+		if (showProjects) setPos(getInitialPos());
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [showProjects]);
 
 	useEffect(() => {
@@ -57,11 +59,13 @@ export default function ProjectsWindow() {
 
 	const handleSelect = (project) => {
 		setSelected(project.name);
-		setClippyMessage("¡Hacé doble clic! 🖱️");
+		setClippyMood("doubleclick");
+		setClippyMessage("¡Hacé doble clic!");
 	};
 
 	const handleOpenApp = (e, project) => {
 		setSelected(project.name);
+		setClippyMood("idle");
 		setClippyMessage(null);
 		const rect = e.currentTarget.getBoundingClientRect();
 		setOpenWindows((prev) => {
@@ -136,8 +140,14 @@ export default function ProjectsWindow() {
 									key={project.name}
 									onClick={() => handleSelect(project)}
 									onDoubleClick={(e) => handleOpenApp(e, project)}
-									onMouseEnter={() => setClippyMessage(project.hoverMessage)}
-									onMouseLeave={() => setClippyMessage(null)}
+									onMouseEnter={() => {
+										setClippyMood("idle");
+										setClippyMessage(project.hoverMessage);
+									}}
+									onMouseLeave={() => {
+										setClippyMood("idle");
+										setClippyMessage(null);
+									}}
 									className={`flex flex-col items-center gap-1 p-2 rounded-sm text-center ${
 										selected === project.name
 											? "bg-win95-navy text-white"

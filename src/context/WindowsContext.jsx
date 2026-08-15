@@ -3,6 +3,8 @@ import { createContext, useContext, useState } from "react";
 const WindowsContext = createContext(null);
 
 export function WindowsProvider({ children }) {
+	const [showWelcome, setShowWelcome] = useState(true);
+	const [showAboutMe, setShowAboutMe] = useState(true);
 	const [showSocial, setShowSocial] = useState(true);
 	const [showProjects, setShowProjects] = useState(true);
 	const [showCV, setShowCV] = useState(true);
@@ -11,7 +13,7 @@ export function WindowsProvider({ children }) {
 
 	const triggerCVDownload = () => {
 		setClippyMood("shovel");
-		setClippyMessage("¡Descargando tu CV! 📥");
+		setClippyMessage("¡Descargando tu CV!");
 		setTimeout(() => {
 			setClippyMood("idle");
 			setClippyMessage(null);
@@ -19,6 +21,16 @@ export function WindowsProvider({ children }) {
 	};
 
 	const value = {
+		showWelcome,
+		openWelcome: () => setShowWelcome(true),
+		closeWelcome: () => setShowWelcome(false),
+		toggleWelcome: () => setShowWelcome((v) => !v),
+
+		showAboutMe,
+		openAboutMe: () => setShowAboutMe(true),
+		closeAboutMe: () => setShowAboutMe(false),
+		toggleAboutMe: () => setShowAboutMe((v) => !v),
+
 		showSocial,
 		openSocial: () => setShowSocial(true),
 		closeSocial: () => setShowSocial(false),

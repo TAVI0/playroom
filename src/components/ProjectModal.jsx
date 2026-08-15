@@ -4,19 +4,27 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function ProjectModal({ project, open, onClose, clickPos }) {
 	const modalRef = useRef(null);
 	const [pos, setPos] = useState({
-		x: window.innerWidth / 2 - 240,
-		y: window.innerHeight / 2 - 180,
+		x: window.innerWidth / 2 - 260,
+		y: window.innerHeight / 2 - 200,
 	});
 	const [dragging, setDragging] = useState(false);
 	const [offset, setOffset] = useState({ x: 0, y: 0 });
+	const [imageIndex, setImageIndex] = useState(0);
+
+	const images = project?.images?.length ? project.images : project?.image ? [project.image] : [];
 
 	useEffect(() => {
 		if (!open) return;
 		setPos({
-			x: clickPos?.x ?? window.innerWidth / 2 - 240,
-			y: clickPos?.y ?? window.innerHeight / 2 - 180,
+			x: clickPos?.x ?? window.innerWidth / 2 - 260,
+			y: clickPos?.y ?? window.innerHeight / 2 - 200,
 		});
 	}, [open, clickPos]);
+
+	// Al cambiar de proyecto, siempre arranca en la primera imagen
+	useEffect(() => {
+		setImageIndex(0);
+	}, [project?.name]);
 
 	useEffect(() => {
 		const handleMouseMove = (e) => {
@@ -47,6 +55,9 @@ export default function ProjectModal({ project, open, onClose, clickPos }) {
 		});
 	};
 
+	const prevImage = () => setImageIndex((i) => (i - 1 + images.length) % images.length);
+	const nextImage = () => setImageIndex((i) => (i + 1) % images.length);
+
 	if (!project) return null;
 
 	return (
@@ -57,8 +68,8 @@ export default function ProjectModal({ project, open, onClose, clickPos }) {
 					initial={{
 						opacity: 0,
 						scale: 0.4,
-						x: clickPos?.x ?? window.innerWidth / 2 - 240,
-						y: clickPos?.y ?? window.innerHeight / 2 - 180,
+						x: clickPos?.x ?? window.innerWidth / 2 - 260,
+						y: clickPos?.y ?? window.innerHeight / 2 - 200,
 					}}
 					animate={{ opacity: 1, scale: 1, x: pos.x, y: pos.y }}
 					exit={{ opacity: 0, scale: 0.8 }}
@@ -67,7 +78,7 @@ export default function ProjectModal({ project, open, onClose, clickPos }) {
 						x: { type: "tween", duration: 0 },
 						y: { type: "tween", duration: 0 },
 					}}
-					className="win95-window fixed z-50 w-[92vw] max-w-md p-[3px] font-win95 select-none"
+					className="win95-window fixed z-50 w-[92vw] max-w-lg p-[3px] font-win95 select-none"
 					style={{ top: 0, left: 0 }}
 				>
 					{/* Barra de título */}
@@ -89,14 +100,48 @@ export default function ProjectModal({ project, open, onClose, clickPos }) {
 					</div>
 
 					{/* Contenido */}
-					<div className="bg-win95-face p-3 max-h-[75vh] overflow-y-auto">
-						<div className="win95-inset bg-black w-full h-36 overflow-hidden mb-3">
+					<div className="bg-win95-face p-3 max-h-[85vh] overflow-y-auto">
+						{/* Galería */}
+						<div className="win95-inset bg-black w-full h-64 sm:h-72 overflow-hidden mb-1 relative">
 							<img
-								src={project.image}
-								alt={project.name}
+								key={images[imageIndex]}
+								src={images[imageIndex]}
+								alt={`${project.name} captura ${imageIndex + 1}`}
 								className="w-full h-full object-cover"
 							/>
+
+							{images.length > 1 && (
+								<>
+									<button
+										onClick={prevImage}
+										className="win95-btn absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center text-sm"
+									>
+										‹
+									</button>
+									<button
+										onClick={nextImage}
+										className="win95-btn absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center text-sm"
+									>
+										›
+									</button>
+								</>
+							)}
 						</div>
+
+						{images.length > 1 && (
+							<div className="flex justify-center gap-1.5 mb-3">
+								{images.map((_, i) => (
+									<button
+										key={i}
+										onClick={() => setImageIndex(i)}
+										aria-label={`Ver imagen ${i + 1}`}
+										className={`w-2.5 h-2.5 border border-black ${
+											i === imageIndex ? "bg-win95-navy" : "bg-win95-face"
+										}`}
+									/>
+								))}
+							</div>
+						)}
 
 						<div className="win95-inset bg-white text-black p-3">
 							<p className="font-bold mb-2">{project.name}</p>

@@ -1,3 +1,56 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  /* Bisel "hacia afuera" clásico de Win95: botones, ventanas, tarjetas */
+  .win95-raised {
+    box-shadow:
+      inset -1px -1px 0 0 theme("colors.win95.darker"),
+      inset 1px 1px 0 0 theme("colors.win95.light"),
+      inset -2px -2px 0 0 theme("colors.win95.dark"),
+      inset 2px 2px 0 0 theme("colors.win95.light2");
+  }
+
+  /* Bisel "hacia adentro": paneles de contenido, inputs, taskbar hundido */
+  .win95-inset {
+    box-shadow:
+      inset -1px -1px 0 0 theme("colors.win95.light"),
+      inset 1px 1px 0 0 theme("colors.win95.darker"),
+      inset -2px -2px 0 0 theme("colors.win95.light2"),
+      inset 2px 2px 0 0 theme("colors.win95.dark");
+  }
+
+  /* Botón estilo Win95: sube al reposo, se hunde al presionar */
+  .win95-btn {
+    @apply win95-raised bg-win95-face text-black active:win95-inset;
+  }
+  .win95-btn:active {
+    @apply win95-inset;
+    transform: translate(1px, 1px);
+  }
+
+  /* Botón "presionado" persistente (taskbar activa) */
+  .win95-btn-pressed {
+    @apply win95-inset bg-win95-face text-black;
+    transform: translate(1px, 1px);
+  }
+
+  .win95-window {
+    @apply win95-raised bg-win95-face;
+  }
+
+  .win95-titlebar {
+    @apply flex items-center justify-between bg-gradient-to-r from-win95-navy to-win95-navylight
+      px-1 py-[3px] text-white font-bold text-sm select-none;
+  }
+
+  .win95-title-btn {
+    @apply win95-raised flex items-center justify-center w-[18px] h-[16px]
+      bg-win95-face text-black text-[10px] leading-none font-bold active:win95-inset;
+  }
+}
+
+body {
+  font-family: "Tahoma", "MS Sans Serif", "Segoe UI", sans-serif;
+}

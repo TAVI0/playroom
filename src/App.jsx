@@ -7,6 +7,7 @@ import Home from "./components/Home";
 import TaskTrackPage from "./components/TaskTrackPage";
 import BookMarkPage from "./components/BookMarkPage";
 import { wakeTaskTrackBackend } from "./wakeTaskTrack";
+import { WindowsProvider } from "./context/WindowsContext";
 
 export default function App() {
 	// Se dispara una sola vez al montar el Playroom, sin importar la ruta,
@@ -17,17 +18,21 @@ export default function App() {
 	}, []);
 
 	return (
-		<div className="min-h-screen bg-gray-50 text-gray-900">
-			<Navbar />
+		<WindowsProvider>
+			<div className="h-screen overflow-hidden bg-win95-desktop text-gray-900 font-win95 flex flex-col">
+				<div className="flex-1 overflow-y-auto pb-14">
+					<Routes>
+					 	<Route path="/" element={<Home />} />
+						<Route path="/taviocoin" element={<TavioCoinPage />} />
+						<Route path="/fotos" element={<PhotoGalleryPage />} />
+						<Route path="/tasktrack" element={<TaskTrackPage />} />
+						<Route path="/bookmark" element={<BookMarkPage />} />
+					</Routes>
+				</div>
 
-			<Routes>
-			 	<Route path="/" element={<Home />} />
-				<Route path="/taviocoin" element={<TavioCoinPage />} />
-				<Route path="/fotos" element={<PhotoGalleryPage />} />
-				<Route path="/tasktrack" element={<TaskTrackPage />} />
-				<Route path="/bookmark" element={<BookMarkPage />} />
-			</Routes>
-		</div>
+				<Navbar />
+			</div>
+		</WindowsProvider>
 	);
 }
 

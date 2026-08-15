@@ -1,35 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useWindows } from "../context/WindowsContext";
 
-const links = [
-	{
-		label: "LinkedIn",
-		value: "Marcos Tavio",
-		href: "https://www.linkedin.com/in/mtavio/",
-		icon: "💼",
-	},
-	{
-		label: "Instagram",
-		value: "@marcos_tavio",
-		href: "https://instagram.com/marcos_tavio",
-		icon: "📷",
-	},
-	{
-		label: "Letterboxd",
-		value: "TAVI0",
-		href: "https://letterboxd.com/TAVI0/",
-		icon: "🎬",
-	},
-];
+const CV_PATH = "/Marcos%20Tavio%20CV.pdf";
+const WINDOW_WIDTH = 460;
+const WINDOW_HEIGHT = 600;
 
-const WINDOW_WIDTH = 320;
-
-export default function SocialModal({ open, onClose, initialPos }) {
+export default function CVWindow({ open, onClose, initialPos }) {
+	const { triggerCVDownload, setClippyMood, setClippyMessage } = useWindows();
 	const modalRef = useRef(null);
 	const [pos, setPos] = useState(
 		initialPos || {
-			x: window.innerWidth / 2 - WINDOW_WIDTH / 2,
-			y: window.innerHeight / 2 - 100,
+			x: Math.max((window.innerWidth - WINDOW_WIDTH) / 2, 16),
+			y: Math.max((window.innerHeight - WINDOW_HEIGHT) / 2, 16),
 		}
 	);
 	const [dragging, setDragging] = useState(false);
@@ -83,52 +66,62 @@ export default function SocialModal({ open, onClose, initialPos }) {
 						x: { type: "tween", duration: 0 },
 						y: { type: "tween", duration: 0 },
 					}}
-					className="win95-window fixed z-40 w-80 p-[3px] font-win95 select-none"
-					style={{ top: 0, left: 0 }}
+					className="win95-window fixed z-40 w-[92vw] p-[3px] font-win95 select-none"
+					style={{ top: 0, left: 0, maxWidth: WINDOW_WIDTH }}
 				>
 					{/* Barra de título */}
-					<div
-						className="win95-titlebar cursor-move"
-						onMouseDown={handleMouseDown}
-						onDoubleClick={(e) => e.preventDefault()}
-					>
-						<span className="flex items-center gap-1">
-							<span aria-hidden>🌐</span> Redes
+					<div className="win95-titlebar cursor-move" onMouseDown={handleMouseDown}>
+						<span className="flex items-center gap-1 truncate">
+							<span aria-hidden>📄</span> Marcos Tavio CV.pdf - Visor
 						</span>
 						<div className="flex items-center gap-[2px]">
 							<button onClick={onClose} className="win95-title-btn">
 								_
 							</button>
-							<button className="win95-title-btn" tabIndex={-1}>
-								□
-							</button>
+							<span className="win95-title-btn">□</span>
 							<button onClick={onClose} className="win95-title-btn">
 								×
 							</button>
 						</div>
 					</div>
 
-					{/* Contenido */}
-					<div className="bg-win95-face p-3">
-						<div className="win95-inset bg-white text-black p-3">
-							<p className="font-bold mb-2">Podés encontrarme en:</p>
-							<ul className="space-y-1.5">
-								{links.map((link) => (
-									<li key={link.label} className="flex items-center gap-2">
-										<span aria-hidden>{link.icon}</span>
-										<span className="text-gray-700">{link.label}:</span>
-										<a
-											href={link.href}
-											target="_blank"
-											rel="noreferrer"
-											className="text-win95-navy underline hover:text-win95-navylight"
-										>
-											{link.value}
-										</a>
-									</li>
-								))}
-							</ul>
+					{/* Barra de menú, como un visor de verdad */}
+					<div className="bg-win95-face px-2 py-1 flex gap-3 text-xs border-b border-win95-dark">
+						<span>Archivo</span>
+						<span>Ver</span>
+						<span>Ventana</span>
+					</div>
+
+					{/* Contenido: "página" del visor */}
+					<div className="bg-win95-face p-2">
+						<div className="win95-inset bg-white" style={{ height: WINDOW_HEIGHT - 140 }}>
+							<iframe
+								src={`${CV_PATH}#toolbar=0&navpanes=0`}
+								title="Vista previa del CV"
+								className="w-full h-full"
+							/>
 						</div>
+					</div>
+
+					{/* Barra de acciones */}
+					<div className="flex justify-between items-center px-2 pb-2">
+						<span className="text-xs text-black/70">1 página</span>
+						<a
+							href={CV_PATH}
+							download="Marcos Tavio CV.pdf"
+							onMouseEnter={() => {
+								setClippyMood("download");
+								setClippyMessage("¿Te llevás una copia? ⛏️");
+							}}
+							onMouseLeave={() => {
+								setClippyMood("idle");
+								setClippyMessage(null);
+							}}
+							onClick={triggerCVDownload}
+							className="win95-btn px-4 py-1 text-sm font-win95"
+						>
+							Descargar
+						</a>
 					</div>
 				</motion.div>
 			)}

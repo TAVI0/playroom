@@ -1,44 +1,82 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import ContactModal from "./ContactModal";
 import SocialModal from "./SocialModal";
+import ProjectsWindow from "./ProjectsWindow";
+import CVWindow from "./CVWindow";
+import Clippy from "./Clippy";
+import { useWindows } from "../context/WindowsContext";
+
+const SOCIAL_WIDTH = 320;
+const TOP_ALIGN_Y = 24; // misma altura que la ventana "Bienvenido.exe"
 
 export default function Navbar() {
   const [showContact, setShowContact] = useState(false);
-  const [showSocial, setShowSocial] = useState(false);
-  const [clickPos, setClickPos] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
-  const location = useLocation();
+  const [clock, setClock] = useState("");
+  const { showSocial, toggleSocial, showProjects, toggleProjects, showCV, toggleCV } = useWindows();
 
-  const handleOpen = (e, type) => {
-    const rect = e.target.getBoundingClientRect();
-    setClickPos({
-      x: rect.left + rect.width / 2,
-      y: rect.bottom + window.scrollY,
-    });
-    if (type === "contact") setShowContact(true);
-    else if (type === "social") setShowSocial(true);
-  };
+  useEffect(() => {
+    const update = () =>
+      setClock(new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }));
+    update();
+    const interval = setInterval(update, 1000 * 30);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
-      <nav className="flex justify-between items-center px-6 py-3 bg-black text-white">
-        <h1 className="text-lg font-bold tracking-wide">
-          <Link to="/" className="hover:text-blue-400">
-            Tavio's Playroom
-          </Link>
-        </h1>
+      {/* Barra de tareas estilo Windows 95 */}
+      <nav className="fixed bottom-0 left-0 right-0 z-40 win95-raised bg-win95-face flex items-center gap-2 px-1 py-1 font-win95">
+        <Link
+          to="/"
+          className="win95-btn flex items-center gap-1 px-2 py-1 text-sm font-bold"
+        >
+          🪟 Tavio's Playroom
+        </Link>
 
-        <ul className="flex gap-6 text-sm items-center">
-          <li>
-            <button className="hover:text-blue-400" onClick={(e) => handleOpen(e, "social")}>
-              Redes
-            </button>
-          </li>
-        </ul>
+        <button
+          onClick={toggleCV}
+          className={`flex items-center gap-1 px-2 py-1 text-sm ${
+            showCV ? "win95-btn-pressed" : "win95-btn"
+          }`}
+        >
+          📄 CV
+        </button>
+
+        <button
+          onClick={toggleProjects}
+          className={`flex items-center gap-1 px-2 py-1 text-sm ${
+            showProjects ? "win95-btn-pressed" : "win95-btn"
+          }`}
+        >
+          📁 Proyectos
+        </button>
+
+        <button
+          onClick={toggleSocial}
+          className={`flex items-center gap-1 px-2 py-1 text-sm ${
+            showSocial ? "win95-btn-pressed" : "win95-btn"
+          }`}
+        >
+          🌐 Redes
+        </button>
+
+        <div className="ml-auto win95-inset px-2 py-1 text-sm">{clock}</div>
       </nav>
 
-      <ContactModal open={showContact} onClose={() => setShowContact(false)} clickPos={clickPos} />
-      <SocialModal open={showSocial} onClose={() => setShowSocial(false)} clickPos={clickPos} />
+      <ContactModal open={showContact} onClose={() => setShowContact(false)} clickPos={{ x: 0, y: 0 }} />
+      <SocialModal
+        open={showSocial}
+        onClose={toggleSocial}
+        initialPos={{ x: Math.max(window.innerWidth - SOCIAL_WIDTH - 24, 16), y: TOP_ALIGN_Y }}
+      />
+      <CVWindow
+        open={showCV}
+        onClose={toggleCV}
+        initialPos={{ x: 24, y: TOP_ALIGN_Y }}
+      />
+      <ProjectsWindow />
+      <Clippy />
     </>
   );
 }

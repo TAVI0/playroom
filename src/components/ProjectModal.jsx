@@ -4,8 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function ProjectModal({ project, open, onClose, clickPos }) {
 	const modalRef = useRef(null);
 	const [pos, setPos] = useState({
-		x: window.innerWidth / 2 - 260,
-		y: window.innerHeight / 2 - 200,
+		x: Math.max(window.innerWidth / 2 - 260, 16),
+		y: Math.max(window.innerHeight / 2 - 200, 16),
 	});
 	const [dragging, setDragging] = useState(false);
 	const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -16,8 +16,8 @@ export default function ProjectModal({ project, open, onClose, clickPos }) {
 	useEffect(() => {
 		if (!open) return;
 		setPos({
-			x: clickPos?.x ?? window.innerWidth / 2 - 260,
-			y: clickPos?.y ?? window.innerHeight / 2 - 200,
+			x: clickPos?.x ?? Math.max(window.innerWidth / 2 - 260, 16),
+			y: clickPos?.y ?? Math.max(window.innerHeight / 2 - 200, 16),
 		});
 	}, [open, clickPos]);
 

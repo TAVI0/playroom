@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWindows } from "../context/WindowsContext";
+import { CV_PATH, CV_FILENAME } from "../data/cv";
 
-const CV_PATH = "/Marcos%20Tavio%20CV.pdf";
 const WINDOW_WIDTH = 460;
 const WINDOW_HEIGHT = 600;
 
@@ -116,7 +116,7 @@ export default function CVWindow({ open, onClose, initialPos }) {
 						<span className="text-xs text-black/70">1 página</span>
 						<a
 							href={CV_PATH}
-							download="Marcos Tavio CV.pdf"
+							download={CV_FILENAME}
 							onMouseEnter={() => {
 								setClippyMood("download");
 								setClippyMessage("¿Te llevás una copia?");

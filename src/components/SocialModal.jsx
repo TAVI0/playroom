@@ -1,26 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
-const links = [
-	{
-		label: "LinkedIn",
-		value: "Marcos Tavio",
-		href: "https://www.linkedin.com/in/mtavio/",
-		icon: "💼",
-	},
-	{
-		label: "Instagram",
-		value: "@marcos_tavio",
-		href: "https://instagram.com/marcos_tavio",
-		icon: "📷",
-	},
-	{
-		label: "Letterboxd",
-		value: "TAVI0",
-		href: "https://letterboxd.com/TAVI0/",
-		icon: "🎬",
-	},
-];
+import { links } from "../data/social";
 
 const WINDOW_WIDTH = 320;
 

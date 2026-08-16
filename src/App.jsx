@@ -6,8 +6,10 @@ import PhotoGalleryPage from "./components/PhotoGalleryPage";
 import Home from "./components/Home";
 import TaskTrackPage from "./components/TaskTrackPage";
 import BookMarkPage from "./components/BookMarkPage";
+import MobileHome from "./components/MobileHome";
 import { wakeTaskTrackBackend } from "./wakeTaskTrack";
 import { WindowsProvider } from "./context/WindowsContext";
+import { useIsMobile } from "./hooks/useIsMobile";
 
 export default function App() {
 	// Se dispara una sola vez al montar el Playroom, sin importar la ruta,
@@ -16,6 +18,14 @@ export default function App() {
 	useEffect(() => {
 		wakeTaskTrackBackend();
 	}, []);
+
+	const isMobile = useIsMobile();
+
+	// En mobile no hay escritorio de ventanas ni taskbar: una sola página
+	// estática que se scrollea de arriba a abajo.
+	if (isMobile) {
+		return <MobileHome />;
+	}
 
 	return (
 		<WindowsProvider>
@@ -35,4 +45,3 @@ export default function App() {
 		</WindowsProvider>
 	);
 }
-

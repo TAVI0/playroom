@@ -6,6 +6,7 @@ export function WindowsProvider({ children }) {
 	const [showWelcome, setShowWelcome] = useState(true);
 	const [showAboutMe, setShowAboutMe] = useState(true);
 	const [showSocial, setShowSocial] = useState(true);
+	const [showSkills, setShowSkills] = useState(true);
 	const [showProjects, setShowProjects] = useState(true);
 	const [showCV, setShowCV] = useState(true);
 	const [clippyMessage, setClippyMessage] = useState(null);
@@ -35,6 +36,11 @@ export function WindowsProvider({ children }) {
 		openSocial: () => setShowSocial(true),
 		closeSocial: () => setShowSocial(false),
 		toggleSocial: () => setShowSocial((v) => !v),
+
+		showSkills,
+		openSkills: () => setShowSkills(true),
+		closeSkills: () => setShowSkills(false),
+		toggleSkills: () => setShowSkills((v) => !v),
 
 		showProjects,
 		openProjects: () => setShowProjects(true),

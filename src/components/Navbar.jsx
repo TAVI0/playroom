@@ -6,10 +6,12 @@ import ProjectsWindow from "./ProjectsWindow";
 import CVWindow from "./CVWindow";
 import WelcomeWindow from "./WelcomeWindow";
 import AboutMeWindow from "./AboutMeWindow";
+import SkillsWindow from "./SkillsWindow";
 import Clippy from "./Clippy";
 import { useWindows } from "../context/WindowsContext";
 
 const SOCIAL_WIDTH = 320;
+const SKILLS_WIDTH = 320;
 const WELCOME_WIDTH = 640;
 const ABOUT_WIDTH = 500;
 const PROJECTS_WIDTH = 640;
@@ -17,6 +19,7 @@ const TOP_ALIGN_Y = 24; // misma altura que la ventana "Bienvenido.exe"
 const ABOUT_ALIGN_Y = 210; // debajo de Bienvenido (separación de 42px: 168 de alto + 42 de gap)
 const WINDOW_GAP = ABOUT_ALIGN_Y - 168; // misma separación que hay entre Bienvenido y AboutMe
 const PROJECTS_ALIGN_Y = 494 + WINDOW_GAP; // debajo de AboutMe (alto real: 284, termina en 494)
+const SKILLS_ALIGN_Y = 220 + WINDOW_GAP; // debajo de Redes (alto real: 196, termina en 220)
 
 export default function Navbar() {
   const [showContact, setShowContact] = useState(false);
@@ -28,6 +31,8 @@ export default function Navbar() {
     toggleAboutMe,
     showSocial,
     toggleSocial,
+    showSkills,
+    toggleSkills,
     showProjects,
     toggleProjects,
     showCV,
@@ -98,6 +103,15 @@ export default function Navbar() {
           🌐 Redes
         </button>
 
+        <button
+          onClick={toggleSkills}
+          className={`flex items-center gap-1 px-2 py-1 text-sm ${
+            showSkills ? "win95-btn-pressed" : "win95-btn"
+          }`}
+        >
+          🧰 Skills
+        </button>
+
         <div className="ml-auto win95-inset px-2 py-1 text-sm">{clock}</div>
       </nav>
 
@@ -119,6 +133,11 @@ export default function Navbar() {
       />
       <ProjectsWindow
         initialPos={{ x: Math.max((window.innerWidth - PROJECTS_WIDTH) / 2, 16), y: PROJECTS_ALIGN_Y }}
+      />
+      <SkillsWindow
+        open={showSkills}
+        onClose={toggleSkills}
+        initialPos={{ x: Math.max(window.innerWidth - SKILLS_WIDTH - 24, 16), y: SKILLS_ALIGN_Y }}
       />
       <AboutMeWindow
         open={showAboutMe}

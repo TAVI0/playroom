@@ -1,10 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useDraggableWindow } from "../hooks/useDraggableWindow";
+import { aboutMe } from "../data/content";
 
 const WINDOW_WIDTH = 500;
-
-// TODO: datos de relleno — ajustar cuando definas el contenido final.
-const skills = ["React", "TypeScript", "Java + Spring Boot", "PostgreSQL", "Docker", "AWS"];
 
 export default function AboutMeWindow({ open, onClose, initialPos }) {
 	const { modalRef, pos, handleMouseDown } = useDraggableWindow(open, initialPos);
@@ -42,21 +40,10 @@ export default function AboutMeWindow({ open, onClose, initialPos }) {
 
 					<div className="bg-win95-face p-3">
 						<div className="win95-inset bg-white text-black p-3">
-							<p className="font-bold text-base mb-1">Marcos Tavio</p>
-							<p className="text-sm text-gray-700 mb-3">Desarrollador Full Stack</p>
+							<p className="font-bold text-base mb-1">{aboutMe.name}</p>
+							<p className="text-sm text-gray-700 mb-3">{aboutMe.role}</p>
 
-							<p className="text-sm text-gray-800 mb-3">
-								Me gusta armar aplicaciones de punta a punta, del backend a la
-								interfaz, y darle una vuelta de rosca divertida a cada proyecto
-								(como este playroom).
-							</p>
-
-							<p className="text-xs font-bold text-gray-600 mb-1">Stack</p>
-							<ul className="text-xs text-gray-700 grid grid-cols-2 gap-x-2 gap-y-0.5">
-								{skills.map((s) => (
-									<li key={s}>• {s}</li>
-								))}
-							</ul>
+							<p className="text-sm text-gray-800">{aboutMe.bio}</p>
 						</div>
 					</div>
 				</motion.div>

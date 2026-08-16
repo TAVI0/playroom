@@ -1,11 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useDraggableWindow } from "../hooks/useDraggableWindow";
+import { useWindows } from "../context/WindowsContext";
 import { welcome } from "../data/content";
 
 const WINDOW_WIDTH = 640;
 
 export default function WelcomeWindow({ open, onClose, initialPos }) {
 	const { modalRef, pos, handleMouseDown } = useDraggableWindow(open, initialPos);
+	const { setClippyMood, setClippyMessage } = useWindows();
 
 	return (
 		<AnimatePresence>
@@ -23,7 +25,18 @@ export default function WelcomeWindow({ open, onClose, initialPos }) {
 					className="win95-window fixed z-40 w-[92vw] p-[3px] font-win95 select-none"
 					style={{ top: 0, left: 0, maxWidth: WINDOW_WIDTH }}
 				>
-					<div className="win95-titlebar cursor-move" onMouseDown={handleMouseDown}>
+					<div
+						className="win95-titlebar cursor-move"
+						onMouseDown={handleMouseDown}
+						onMouseEnter={() => {
+							setClippyMood("idle");
+							setClippyMessage("Probá mover las ventanas");
+						}}
+						onMouseLeave={() => {
+							setClippyMood("idle");
+							setClippyMessage(null);
+						}}
+					>
 						<span className="flex items-center gap-1 truncate">
 							<span aria-hidden>🖥️</span> Bienvenido.exe
 						</span>

@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useWindows } from "../context/WindowsContext";
 
 export default function ProjectModal({ project, open, onClose, clickPos }) {
+	const { setClippyMood, setClippyMessage } = useWindows();
 	const modalRef = useRef(null);
 	const [pos, setPos] = useState({
 		x: Math.max(window.innerWidth / 2 - 260, 16),
@@ -15,11 +17,13 @@ export default function ProjectModal({ project, open, onClose, clickPos }) {
 
 	useEffect(() => {
 		if (!open) return;
+		// La ventana siempre termina centrada en el escritorio (web);
+		// clickPos solo se usa como punto de partida de la animación.
 		setPos({
-			x: clickPos?.x ?? Math.max(window.innerWidth / 2 - 260, 16),
-			y: clickPos?.y ?? Math.max(window.innerHeight / 2 - 200, 16),
+			x: Math.max(window.innerWidth / 2 - 260, 16),
+			y: Math.max(window.innerHeight / 2 - 200, 16),
 		});
-	}, [open, clickPos]);
+	}, [open]);
 
 	// Al cambiar de proyecto, siempre arranca en la primera imagen
 	useEffect(() => {
@@ -82,7 +86,18 @@ export default function ProjectModal({ project, open, onClose, clickPos }) {
 					style={{ top: 0, left: 0 }}
 				>
 					{/* Barra de título */}
-					<div className="win95-titlebar cursor-move" onMouseDown={handleMouseDown}>
+					<div
+						className="win95-titlebar cursor-move"
+						onMouseDown={handleMouseDown}
+						onMouseEnter={() => {
+							setClippyMood("idle");
+							setClippyMessage("Probá mover las ventanas");
+						}}
+						onMouseLeave={() => {
+							setClippyMood("idle");
+							setClippyMessage(null);
+						}}
+					>
 						<span className="flex items-center gap-1 truncate">
 							<span aria-hidden>{project.icon}</span> {project.name}.exe
 						</span>

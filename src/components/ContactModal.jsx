@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useWindows } from "../context/WindowsContext";
 
 export default function ContactModal({ open, onClose, clickPos }) {
+	const { setClippyMood, setClippyMessage } = useWindows();
 	const modalRef = useRef(null);
 	const [pos, setPos] = useState({
 		x: window.innerWidth / 2 - 160,
@@ -60,7 +62,18 @@ export default function ContactModal({ open, onClose, clickPos }) {
 					className="win95-window fixed z-50 w-80 p-[3px] font-win95 select-none"
 					style={{ top: 0, left: 0 }}
 				>
-					<div className="win95-titlebar cursor-move" onMouseDown={handleMouseDown}>
+					<div
+						className="win95-titlebar cursor-move"
+						onMouseDown={handleMouseDown}
+						onMouseEnter={() => {
+							setClippyMood("idle");
+							setClippyMessage("Probá mover las ventanas");
+						}}
+						onMouseLeave={() => {
+							setClippyMood("idle");
+							setClippyMessage(null);
+						}}
+					>
 						<span className="flex items-center gap-1">
 							<span aria-hidden>💬</span> Contacto
 						</span>

@@ -107,7 +107,18 @@ export default function ProjectsWindow({ initialPos }) {
 						style={{ top: 0, left: 0, maxWidth: WINDOW_WIDTH }}
 						onClick={() => setSelected(null)}
 					>
-						<div className="win95-titlebar cursor-move" onMouseDown={handleMouseDown}>
+						<div
+							className="win95-titlebar cursor-move"
+							onMouseDown={handleMouseDown}
+							onMouseEnter={() => {
+								setClippyMood("idle");
+								setClippyMessage("Probá mover las ventanas");
+							}}
+							onMouseLeave={() => {
+								setClippyMood("idle");
+								setClippyMessage(null);
+							}}
+						>
 							<span className="flex items-center gap-1 truncate">
 								<span aria-hidden>📁</span> Proyectos
 							</span>

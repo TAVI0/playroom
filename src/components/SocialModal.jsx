@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { links } from "../data/social";
+import { useWindows } from "../context/WindowsContext";
 
 const WINDOW_WIDTH = 320;
 
 export default function SocialModal({ open, onClose, initialPos }) {
+	const { setClippyMood, setClippyMessage } = useWindows();
 	const modalRef = useRef(null);
 	const [pos, setPos] = useState(
 		initialPos || {
@@ -71,6 +73,14 @@ export default function SocialModal({ open, onClose, initialPos }) {
 						className="win95-titlebar cursor-move"
 						onMouseDown={handleMouseDown}
 						onDoubleClick={(e) => e.preventDefault()}
+						onMouseEnter={() => {
+							setClippyMood("idle");
+							setClippyMessage("Probá mover las ventanas");
+						}}
+						onMouseLeave={() => {
+							setClippyMood("idle");
+							setClippyMessage(null);
+						}}
 					>
 						<span className="flex items-center gap-1">
 							<span aria-hidden>🌐</span> Redes

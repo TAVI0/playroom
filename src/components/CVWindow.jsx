@@ -78,7 +78,18 @@ export default function CVWindow({ open, onClose, initialPos }) {
 					}}
 				>
 					{/* Barra de título */}
-					<div className="win95-titlebar cursor-move" onMouseDown={handleMouseDown}>
+					<div
+						className="win95-titlebar cursor-move"
+						onMouseDown={handleMouseDown}
+						onMouseEnter={() => {
+							setClippyMood("idle");
+							setClippyMessage("Probá mover las ventanas");
+						}}
+						onMouseLeave={() => {
+							setClippyMood("reading");
+							setClippyMessage("¿Algo que te llame la atención?");
+						}}
+					>
 						<span className="flex items-center gap-1 truncate">
 							<span aria-hidden>📄</span> Marcos Tavio CV.pdf - Visor
 						</span>

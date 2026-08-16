@@ -2,7 +2,11 @@ import { useEffect, useRef, useState } from "react";
 
 // Lógica compartida de arrastre + reseteo de posición al reabrir,
 // usada por todas las ventanas estilo Win95 (Redes, CV, Proyectos, etc).
-export function useDraggableWindow(open, initialPos) {
+//
+// startPos (opcional): punto de origen de la animación de apertura cuando
+// difiere de la posición de reposo (initialPos) — por ejemplo, ventanas que
+// "crecen" desde donde se hizo doble-click antes de terminar centradas.
+export function useDraggableWindow(open, initialPos, startPos) {
 	const modalRef = useRef(null);
 	const [pos, setPos] = useState(initialPos);
 	const [dragging, setDragging] = useState(false);
@@ -43,5 +47,5 @@ export function useDraggableWindow(open, initialPos) {
 		});
 	};
 
-	return { modalRef, pos, handleMouseDown };
+	return { modalRef, pos, handleMouseDown, openFrom: startPos ?? initialPos };
 }

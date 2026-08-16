@@ -1,45 +1,19 @@
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useWindows } from "../context/WindowsContext";
+import { AnimatePresence, motion } from "framer-motion";
+import { useDraggableWindow } from "../hooks/useDraggableWindow";
+import { useHoverHint } from "../hooks/useHoverHint";
+import { Z_INDEX } from "../config/windows";
 
 export default function ContactModal({ open, onClose, clickPos }) {
-	const { setClippyMood, setClippyMessage } = useWindows();
-	const modalRef = useRef(null);
-	const [pos, setPos] = useState({
+	const hoverHint = useHoverHint("Probá mover las ventanas");
+	const centeredPos = {
 		x: window.innerWidth / 2 - 160,
 		y: window.innerHeight / 2 - 100,
-	});
-	const [dragging, setDragging] = useState(false);
-	const [offset, setOffset] = useState({ x: 0, y: 0 });
-
-	useEffect(() => {
-		const handleMouseMove = (e) => {
-			if (!dragging) return;
-			setPos({
-				x: e.clientX - offset.x,
-				y: e.clientY - offset.y,
-			});
-		};
-
-		const handleMouseUp = () => setDragging(false);
-
-		window.addEventListener("mousemove", handleMouseMove);
-		window.addEventListener("mouseup", handleMouseUp);
-
-		return () => {
-			window.removeEventListener("mousemove", handleMouseMove);
-			window.removeEventListener("mouseup", handleMouseUp);
-		};
-	}, [dragging, offset]);
-
-	const handleMouseDown = (e) => {
-		setDragging(true);
-		const rect = modalRef.current.getBoundingClientRect();
-		setOffset({
-			x: e.clientX - rect.left,
-			y: e.clientY - rect.top,
-		});
 	};
+	const { modalRef, pos, handleMouseDown, openFrom } = useDraggableWindow(
+		open,
+		centeredPos,
+		clickPos,
+	);
 
 	return (
 		<AnimatePresence>
@@ -49,8 +23,8 @@ export default function ContactModal({ open, onClose, clickPos }) {
 					initial={{
 						opacity: 0,
 						scale: 0.4,
-						x: clickPos?.x || window.innerWidth / 2 - 160,
-						y: clickPos?.y || window.innerHeight / 2 - 100,
+						x: openFrom.x,
+						y: openFrom.y,
 					}}
 					animate={{ opacity: 1, scale: 1, x: pos.x, y: pos.y }}
 					exit={{ opacity: 0, scale: 0.8 }}
@@ -59,21 +33,10 @@ export default function ContactModal({ open, onClose, clickPos }) {
 						x: { type: "tween", duration: 0 },
 						y: { type: "tween", duration: 0 },
 					}}
-					className="win95-window fixed z-50 w-80 p-[3px] font-win95 select-none"
-					style={{ top: 0, left: 0 }}
+					className="win95-window fixed w-80 p-[3px] font-win95 select-none"
+					style={{ top: 0, left: 0, zIndex: Z_INDEX.modal }}
 				>
-					<div
-						className="win95-titlebar cursor-move"
-						onMouseDown={handleMouseDown}
-						onMouseEnter={() => {
-							setClippyMood("idle");
-							setClippyMessage("Probá mover las ventanas");
-						}}
-						onMouseLeave={() => {
-							setClippyMood("idle");
-							setClippyMessage(null);
-						}}
-					>
+					<div className="win95-titlebar cursor-move" onMouseDown={handleMouseDown} {...hoverHint}>
 						<span className="flex items-center gap-1">
 							<span aria-hidden>💬</span> Contacto
 						</span>
@@ -97,21 +60,34 @@ export default function ContactModal({ open, onClose, clickPos }) {
 								<li className="flex items-center gap-2">
 									<span aria-hidden>✉️</span>
 									<span className="text-gray-700">Email:</span>
-									<a href="mailto:marcos@example.com" className="text-win95-navy underline hover:text-win95-navylight">
+									<a
+										href="mailto:marcos@example.com"
+										className="text-win95-navy underline hover:text-win95-navylight"
+									>
 										marcos@example.com
 									</a>
 								</li>
 								<li className="flex items-center gap-2">
 									<span aria-hidden>📷</span>
 									<span className="text-gray-700">Instagram:</span>
-									<a href="https://instagram.com/marcos" target="_blank" rel="noreferrer" className="text-win95-navy underline hover:text-win95-navylight">
+									<a
+										href="https://instagram.com/marcos"
+										target="_blank"
+										rel="noreferrer"
+										className="text-win95-navy underline hover:text-win95-navylight"
+									>
 										@marcos
 									</a>
 								</li>
 								<li className="flex items-center gap-2">
 									<span aria-hidden>💼</span>
 									<span className="text-gray-700">LinkedIn:</span>
-									<a href="https://linkedin.com/in/marcos" target="_blank" rel="noreferrer" className="text-win95-navy underline hover:text-win95-navylight">
+									<a
+										href="https://linkedin.com/in/marcos"
+										target="_blank"
+										rel="noreferrer"
+										className="text-win95-navy underline hover:text-win95-navylight"
+									>
 										Marcos Tavio
 									</a>
 								</li>

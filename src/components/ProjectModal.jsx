@@ -1,66 +1,93 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useWindows } from "../context/WindowsContext";
+import { ethers } from "ethers";
+import { useDraggableWindow } from "../hooks/useDraggableWindow";
+import { useHoverHint } from "../hooks/useHoverHint";
+import { CONTRACT_ADDRESS, TOKEN_SYMBOL, TOKEN_DECIMALS, TOKEN_IMAGE } from "../config/tavioCoin";
+import TavioCoinABI from "../abi/tavioCoinABI.json";
+import { Z_INDEX } from "../config/windows";
 
 export default function ProjectModal({ project, open, onClose, clickPos }) {
-	const { setClippyMood, setClippyMessage } = useWindows();
-	const modalRef = useRef(null);
-	const [pos, setPos] = useState({
-		x: Math.max(window.innerWidth / 2 - 260, 16),
-		y: Math.max(window.innerHeight / 2 - 200, 16),
-	});
-	const [dragging, setDragging] = useState(false);
-	const [offset, setOffset] = useState({ x: 0, y: 0 });
+	const hoverHint = useHoverHint("Probá mover las ventanas");
+	const [account, setAccount] = useState(null);
+	const [claimStatus, setClaimStatus] = useState("");
+	const [isClaiming, setIsClaiming] = useState(false);
 	const [imageIndex, setImageIndex] = useState(0);
 
 	const images = project?.images?.length ? project.images : project?.image ? [project.image] : [];
 
-	useEffect(() => {
-		if (!open) return;
-		// La ventana siempre termina centrada en el escritorio (web);
-		// clickPos solo se usa como punto de partida de la animación.
-		setPos({
-			x: Math.max(window.innerWidth / 2 - 260, 16),
-			y: Math.max(window.innerHeight / 2 - 200, 16),
-		});
-	}, [open]);
+	// La ventana siempre termina centrada en el escritorio (web);
+	// clickPos solo se usa como punto de partida de la animación.
+	const centeredPos = {
+		x: Math.max(window.innerWidth / 2 - 260, 16),
+		y: Math.max(window.innerHeight / 2 - 200, 16),
+	};
+	const { modalRef, pos, handleMouseDown, openFrom } = useDraggableWindow(
+		open,
+		centeredPos,
+		clickPos,
+	);
 
 	// Al cambiar de proyecto, siempre arranca en la primera imagen
 	useEffect(() => {
 		setImageIndex(0);
 	}, [project?.name]);
 
-	useEffect(() => {
-		const handleMouseMove = (e) => {
-			if (!dragging) return;
-			setPos({
-				x: e.clientX - offset.x,
-				y: e.clientY - offset.y,
-			});
-		};
-
-		const handleMouseUp = () => setDragging(false);
-
-		window.addEventListener("mousemove", handleMouseMove);
-		window.addEventListener("mouseup", handleMouseUp);
-
-		return () => {
-			window.removeEventListener("mousemove", handleMouseMove);
-			window.removeEventListener("mouseup", handleMouseUp);
-		};
-	}, [dragging, offset]);
-
-	const handleMouseDown = (e) => {
-		setDragging(true);
-		const rect = modalRef.current.getBoundingClientRect();
-		setOffset({
-			x: e.clientX - rect.left,
-			y: e.clientY - rect.top,
-		});
-	};
-
 	const prevImage = () => setImageIndex((i) => (i - 1 + images.length) % images.length);
 	const nextImage = () => setImageIndex((i) => (i + 1) % images.length);
+
+	// Wallet: conectar MetaMask
+	async function connectWallet() {
+		if (!window.ethereum) return alert("Instalá MetaMask para continuar.");
+		const provider = new ethers.BrowserProvider(window.ethereum);
+		const accounts = await provider.send("eth_requestAccounts", []);
+		setAccount(accounts[0]);
+	}
+
+	// Wallet: reclamar tokens
+	async function claimTokens() {
+		try {
+			setIsClaiming(true);
+			setClaimStatus("🚀 Ejecutando transacción...");
+			const provider = new ethers.BrowserProvider(window.ethereum);
+			const signer = await provider.getSigner();
+			const contract = new ethers.Contract(CONTRACT_ADDRESS, TavioCoinABI, signer);
+
+			const tx = await contract.claim();
+			await tx.wait();
+			setClaimStatus("✅ Claim realizado con éxito!");
+		} catch (err) {
+			console.error(err);
+			setClaimStatus("❌ Error al ejecutar claim");
+		} finally {
+			setIsClaiming(false);
+		}
+	}
+
+	// Wallet: agregar el token a MetaMask (click en la imagen del token)
+	async function addTokenToMetaMask() {
+		try {
+			if (!window.ethereum) return alert("Necesitás tener MetaMask instalada.");
+
+			const wasAdded = await window.ethereum.request({
+				method: "wallet_watchAsset",
+				params: {
+					type: "ERC20",
+					options: {
+						address: CONTRACT_ADDRESS,
+						symbol: TOKEN_SYMBOL,
+						decimals: TOKEN_DECIMALS,
+						image: TOKEN_IMAGE,
+					},
+				},
+			});
+
+			alert(wasAdded ? "🦊 TavioCoin agregado a tu MetaMask" : "❌ Acción cancelada");
+		} catch (error) {
+			console.error(error);
+			alert("Ocurrió un error al intentar agregar el token.");
+		}
+	}
 
 	if (!project) return null;
 
@@ -72,8 +99,8 @@ export default function ProjectModal({ project, open, onClose, clickPos }) {
 					initial={{
 						opacity: 0,
 						scale: 0.4,
-						x: clickPos?.x ?? window.innerWidth / 2 - 260,
-						y: clickPos?.y ?? window.innerHeight / 2 - 200,
+						x: openFrom.x,
+						y: openFrom.y,
 					}}
 					animate={{ opacity: 1, scale: 1, x: pos.x, y: pos.y }}
 					exit={{ opacity: 0, scale: 0.8 }}
@@ -82,22 +109,11 @@ export default function ProjectModal({ project, open, onClose, clickPos }) {
 						x: { type: "tween", duration: 0 },
 						y: { type: "tween", duration: 0 },
 					}}
-					className="win95-window fixed z-50 w-[92vw] max-w-lg p-[3px] font-win95 select-none"
-					style={{ top: 0, left: 0 }}
+					className="win95-window fixed w-[92vw] max-w-lg p-[3px] font-win95 select-none"
+					style={{ top: 0, left: 0, zIndex: Z_INDEX.modal }}
 				>
 					{/* Barra de título */}
-					<div
-						className="win95-titlebar cursor-move"
-						onMouseDown={handleMouseDown}
-						onMouseEnter={() => {
-							setClippyMood("idle");
-							setClippyMessage("Probá mover las ventanas");
-						}}
-						onMouseLeave={() => {
-							setClippyMood("idle");
-							setClippyMessage(null);
-						}}
-					>
+					<div className="win95-titlebar cursor-move" onMouseDown={handleMouseDown} {...hoverHint}>
 						<span className="flex items-center gap-1 truncate">
 							<span aria-hidden>{project.icon}</span> {project.name}.exe
 						</span>
@@ -164,9 +180,7 @@ export default function ProjectModal({ project, open, onClose, clickPos }) {
 
 							{project.tech && (
 								<>
-									<p className="text-xs font-bold text-gray-600 mb-1">
-										Tecnologías utilizadas
-									</p>
+									<p className="text-xs font-bold text-gray-600 mb-1">Tecnologías utilizadas</p>
 									<ul className="text-xs text-gray-700 space-y-0.5 mb-1">
 										{project.tech.map((t) => (
 											<li key={t}>• {t}</li>
@@ -175,6 +189,45 @@ export default function ProjectModal({ project, open, onClose, clickPos }) {
 								</>
 							)}
 						</div>
+
+						{project.isWeb3 && (
+							<div className="win95-inset bg-white text-black p-3 mt-1 text-center">
+								<button
+									onClick={account ? claimTokens : connectWallet}
+									disabled={isClaiming}
+									className="win95-btn px-4 py-1 text-sm font-win95 w-full"
+								>
+									{isClaiming
+										? "⏳ Reclamando..."
+										: account
+											? "💰 Claim TavioCoin"
+											: "🔗 Conectar Wallet"}
+								</button>
+
+								{account && (
+									<p className="text-xs text-gray-600 mt-2">
+										Wallet: {account.slice(0, 6)}...{account.slice(-4)} ·{" "}
+										<button onClick={addTokenToMetaMask} className="text-win95-navy underline">
+											agregar a MetaMask
+										</button>
+									</p>
+								)}
+
+								{claimStatus && (
+									<p
+										className={`text-xs mt-2 ${
+											claimStatus.includes("✅")
+												? "text-green-700"
+												: claimStatus.includes("❌")
+													? "text-red-700"
+													: "text-gray-600"
+										}`}
+									>
+										{claimStatus}
+									</p>
+								)}
+							</div>
+						)}
 
 						{project.href && (
 							<div className="flex justify-end mt-3">

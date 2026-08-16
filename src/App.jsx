@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import TavioCoinPage from "./components/TavioCoinPage";
 import PhotoGalleryPage from "./components/PhotoGalleryPage";
 import Home from "./components/Home";
 import TaskTrackPage from "./components/TaskTrackPage";
@@ -21,27 +20,27 @@ export default function App() {
 
 	const isMobile = useIsMobile();
 
-	// En mobile no hay escritorio de ventanas ni taskbar: una sola página
-	// estática que se scrollea de arriba a abajo.
-	if (isMobile) {
-		return <MobileHome />;
-	}
-
 	return (
 		<WindowsProvider>
-			<div className="h-screen overflow-hidden bg-win95-desktop text-gray-900 font-win95 flex flex-col">
-				<div className="flex-1 overflow-y-auto pb-14">
-					<Routes>
-					 	<Route path="/" element={<Home />} />
-						<Route path="/taviocoin" element={<TavioCoinPage />} />
-						<Route path="/fotos" element={<PhotoGalleryPage />} />
-						<Route path="/tasktrack" element={<TaskTrackPage />} />
-						<Route path="/bookmark" element={<BookMarkPage />} />
-					</Routes>
-				</div>
+			{isMobile ? (
+				// En mobile no hay escritorio de ventanas ni taskbar: una sola página
+				// estática que se scrollea de arriba a abajo. Sigue necesitando
+				// WindowsProvider porque ProjectModal (Clippy hints) lo consume.
+				<MobileHome />
+			) : (
+				<div className="h-screen overflow-hidden bg-win95-desktop text-gray-900 font-win95 flex flex-col">
+					<div className="flex-1 overflow-y-auto pb-14">
+						<Routes>
+							<Route path="/" element={<Home />} />
+							<Route path="/fotos" element={<PhotoGalleryPage />} />
+							<Route path="/tasktrack" element={<TaskTrackPage />} />
+							<Route path="/bookmark" element={<BookMarkPage />} />
+						</Routes>
+					</div>
 
-				<Navbar />
-			</div>
+					<Navbar />
+				</div>
+			)}
 		</WindowsProvider>
 	);
 }

@@ -2,9 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function BookMarkPage() {
 	return (
-		<div
-			className="relative flex flex-col items-center justify-center min-h-screen bg-gray-950 text-gray-100 px-6 text-center overflow-hidden"
-		>
+		<div className="relative flex flex-col items-center justify-center min-h-screen bg-gray-950 text-gray-100 px-6 text-center overflow-hidden">
 			{/* Fondo con imagen */}
 			<img
 				src="https://imgur.com/ZcRTRRr.png"
@@ -19,14 +17,12 @@ export default function BookMarkPage() {
 			<div className="relative z-10">
 				<h1 className="text-4xl font-bold mb-4">BookMark</h1>
 				<p className="max-w-md text-lg mb-8 text-gray-300">
-					Red social para compartir las reseñas, puntuaciones y llevar un registro de los libros los cuales estan leyendo con tus amigos
-			
+					Red social para compartir las reseñas, puntuaciones y llevar un registro de los libros los
+					cuales estan leyendo con tus amigos
 				</p>
 				{/* Tecnologías */}
 				<div className="max-w-md mb-8 text-gray-400 text-sm">
-					<p className="font-semibold text-gray-300 mb-2">
-						Tecnologías utilizadas
-					</p>
+					<p className="font-semibold text-gray-300 mb-2">Tecnologías utilizadas</p>
 					<ul className="space-y-1">
 						<li>• Frontend: Javascript + React</li>
 						<li>• Backend: Java + Spring Boot</li>
@@ -34,7 +30,7 @@ export default function BookMarkPage() {
 						<li>• Infraestructura: Neon para BBDD, Render para Backend, Vercel para Frontend</li>
 						{/* 
 							<li>• Contenedorización: Docker</li>
-						*/} 
+						*/}
 					</ul>
 				</div>
 

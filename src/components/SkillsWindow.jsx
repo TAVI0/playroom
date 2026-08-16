@@ -1,13 +1,14 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { skills } from "../data/skills";
 import { useDraggableWindow } from "../hooks/useDraggableWindow";
-import { useWindows } from "../context/WindowsContext";
+import { useHoverHint } from "../hooks/useHoverHint";
+import { WINDOWS, Z_INDEX } from "../config/windows";
 
-const WINDOW_WIDTH = 320;
+const { width: WINDOW_WIDTH } = WINDOWS.skills;
 
 export default function SkillsWindow({ open, onClose, initialPos }) {
 	const { modalRef, pos, handleMouseDown } = useDraggableWindow(open, initialPos);
-	const { setClippyMood, setClippyMessage } = useWindows();
+	const hoverHint = useHoverHint("Probá mover las ventanas");
 
 	return (
 		<AnimatePresence>
@@ -22,21 +23,10 @@ export default function SkillsWindow({ open, onClose, initialPos }) {
 						x: { type: "tween", duration: 0 },
 						y: { type: "tween", duration: 0 },
 					}}
-					className="win95-window fixed z-40 w-[92vw] p-[3px] font-win95 select-none"
-					style={{ top: 0, left: 0, maxWidth: WINDOW_WIDTH }}
+					className="win95-window fixed w-[92vw] p-[3px] font-win95 select-none"
+					style={{ top: 0, left: 0, maxWidth: WINDOW_WIDTH, zIndex: Z_INDEX.desktopWindow }}
 				>
-					<div
-						className="win95-titlebar cursor-move"
-						onMouseDown={handleMouseDown}
-						onMouseEnter={() => {
-							setClippyMood("idle");
-							setClippyMessage("Probá mover las ventanas");
-						}}
-						onMouseLeave={() => {
-							setClippyMood("idle");
-							setClippyMessage(null);
-						}}
-					>
+					<div className="win95-titlebar cursor-move" onMouseDown={handleMouseDown} {...hoverHint}>
 						<span className="flex items-center gap-1 truncate">
 							<span aria-hidden>🧰</span> Skills
 						</span>
@@ -64,9 +54,7 @@ export default function SkillsWindow({ open, onClose, initialPos }) {
 								<span className="text-3xl" aria-hidden>
 									{skill.icon}
 								</span>
-								<span className="text-xs font-win95 leading-tight text-black">
-									{skill.name}
-								</span>
+								<span className="text-xs font-win95 leading-tight text-black">{skill.name}</span>
 							</div>
 						))}
 					</div>

@@ -1,6 +1,6 @@
-import { createContext, useContext, useState } from "react";
-
-const WindowsContext = createContext(null);
+import { useState } from "react";
+import { CLIPPY_MOOD } from "../data/clippyMoods";
+import { WindowsContext } from "./windowsContextObject";
 
 export function WindowsProvider({ children }) {
 	const [showWelcome, setShowWelcome] = useState(true);
@@ -10,13 +10,13 @@ export function WindowsProvider({ children }) {
 	const [showProjects, setShowProjects] = useState(true);
 	const [showCV, setShowCV] = useState(true);
 	const [clippyMessage, setClippyMessage] = useState(null);
-	const [clippyMood, setClippyMood] = useState("idle"); // "idle" | "talk" | "shovel"
+	const [clippyMood, setClippyMood] = useState(CLIPPY_MOOD.IDLE); // ver valores posibles en CLIPPY_MOOD
 
 	const triggerCVDownload = () => {
-		setClippyMood("shovel");
+		setClippyMood(CLIPPY_MOOD.SHOVEL);
 		setClippyMessage("¡Descargando tu CV!");
 		setTimeout(() => {
-			setClippyMood("idle");
+			setClippyMood(CLIPPY_MOOD.IDLE);
 			setClippyMessage(null);
 		}, 2500);
 	};
@@ -59,13 +59,5 @@ export function WindowsProvider({ children }) {
 		triggerCVDownload,
 	};
 
-	return (
-		<WindowsContext.Provider value={value}>{children}</WindowsContext.Provider>
-	);
-}
-
-export function useWindows() {
-	const ctx = useContext(WindowsContext);
-	if (!ctx) throw new Error("useWindows debe usarse dentro de <WindowsProvider>");
-	return ctx;
+	return <WindowsContext.Provider value={value}>{children}</WindowsContext.Provider>;
 }

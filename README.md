@@ -1,16 +1,44 @@
-# React + Vite
+# Tavio's Playroom
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Portfolio personal con estética Windows 95: un "escritorio" con ventanas arrastrables (Bienvenido, AboutMe, CV, Proyectos, Skills, Redes) y Clippie reaccionando a lo que el usuario hace. En mobile se reemplaza por una vista estática de una sola página (`MobileHome`).
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [Vite](https://vitejs.dev/) + [React 19](https://react.dev/)
+- [Tailwind CSS](https://tailwindcss.com/) (paleta `win95` custom en `tailwind.config.js`)
+- [Framer Motion](https://www.framer.com/motion/) para las animaciones de apertura/cierre de ventanas
+- [react-router-dom](https://reactrouter.com/) para las rutas
+- [ethers.js](https://docs.ethers.org/) para el flujo de wallet del proyecto TavioCoin
 
-## React Compiler
+## Rutas
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Ruta         | Qué es                                                    |
+| ------------ | ----------------------------------------------------------- |
+| `/`          | Escritorio principal (o `MobileHome` en mobile)              |
+| `/fotos`     | Galería de fotos                                             |
+| `/tasktrack` | Landing del proyecto TaskTrack                               |
+| `/bookmark`  | Landing del proyecto BookMark                                |
 
-## Expanding the ESLint configuration
+El proyecto **TavioCoin** no tiene ruta propia: se abre como una ventana más desde el escritorio (`ProjectsWindow` → `ProjectModal`), con un botón de conectar wallet + claim del token directamente en el modal (`project.isWeb3` en `src/data/projects.js`).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Arquitectura de ventanas
+
+- `src/context/WindowsContext.jsx` centraliza qué ventanas están abiertas y el estado de Clippie (`clippyMessage`, `clippyMood`). Se consume vía el hook `src/context/useWindows.js`.
+- `src/hooks/useDraggableWindow.js` es la lógica compartida de arrastre + reseteo de posición al reabrir, usada por todas las ventanas.
+- `src/hooks/useHoverHint.js` maneja el patrón repetido de "mostrarle un mensaje a Clippie al pasar el mouse".
+- `src/config/windows.js` centraliza ancho/alto/z-index de cada ventana (única fuente de verdad, usada tanto por cada ventana como por `Navbar.jsx` para calcular posiciones iniciales apiladas).
+- `src/data/clippyMoods.js` define los estados posibles de Clippie (`CLIPPY_MOOD`).
+
+## Variables de entorno
+
+- `VITE_TASKTRACK_API_URL` (opcional): URL del backend de TaskTrack en Render. Si no se define, usa `https://tasktrack-go4j.onrender.com`. Se usa en `src/wakeTaskTrack.js` para "despertar" el backend (cold start de Render) apenas se carga el Playroom.
+
+## Scripts
+
+```bash
+npm run dev      # servidor de desarrollo
+npm run build    # build de producción
+npm run preview  # preview del build
+npm run lint     # ESLint
+npm run format   # Prettier (escribe los cambios)
+```

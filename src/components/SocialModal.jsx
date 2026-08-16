@@ -1,56 +1,18 @@
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { links } from "../data/social";
-import { useWindows } from "../context/WindowsContext";
+import { useDraggableWindow } from "../hooks/useDraggableWindow";
+import { useHoverHint } from "../hooks/useHoverHint";
+import { WINDOWS, Z_INDEX } from "../config/windows";
 
-const WINDOW_WIDTH = 320;
+const { width: WINDOW_WIDTH } = WINDOWS.social;
 
 export default function SocialModal({ open, onClose, initialPos }) {
-	const { setClippyMood, setClippyMessage } = useWindows();
-	const modalRef = useRef(null);
-	const [pos, setPos] = useState(
-		initialPos || {
-			x: window.innerWidth / 2 - WINDOW_WIDTH / 2,
-			y: window.innerHeight / 2 - 100,
-		}
-	);
-	const [dragging, setDragging] = useState(false);
-	const [offset, setOffset] = useState({ x: 0, y: 0 });
-
-	// Al reabrirla, siempre vuelve a su rincón original (ignora dónde la dejó el usuario)
-	useEffect(() => {
-		if (open) setPos(initialPos || pos);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [open]);
-
-	useEffect(() => {
-		const handleMouseMove = (e) => {
-			if (!dragging) return;
-			setPos({
-				x: e.clientX - offset.x,
-				y: e.clientY - offset.y,
-			});
-		};
-
-		const handleMouseUp = () => setDragging(false);
-
-		window.addEventListener("mousemove", handleMouseMove);
-		window.addEventListener("mouseup", handleMouseUp);
-
-		return () => {
-			window.removeEventListener("mousemove", handleMouseMove);
-			window.removeEventListener("mouseup", handleMouseUp);
-		};
-	}, [dragging, offset]);
-
-	const handleMouseDown = (e) => {
-		setDragging(true);
-		const rect = modalRef.current.getBoundingClientRect();
-		setOffset({
-			x: e.clientX - rect.left,
-			y: e.clientY - rect.top,
-		});
+	const hoverHint = useHoverHint("Probá mover las ventanas");
+	const fallbackPos = {
+		x: window.innerWidth / 2 - WINDOW_WIDTH / 2,
+		y: window.innerHeight / 2 - 100,
 	};
+	const { modalRef, pos, handleMouseDown } = useDraggableWindow(open, initialPos || fallbackPos);
 
 	return (
 		<AnimatePresence>
@@ -65,22 +27,15 @@ export default function SocialModal({ open, onClose, initialPos }) {
 						x: { type: "tween", duration: 0 },
 						y: { type: "tween", duration: 0 },
 					}}
-					className="win95-window fixed z-40 w-80 p-[3px] font-win95 select-none"
-					style={{ top: 0, left: 0 }}
+					className="win95-window fixed w-80 p-[3px] font-win95 select-none"
+					style={{ top: 0, left: 0, zIndex: Z_INDEX.desktopWindow }}
 				>
 					{/* Barra de título */}
 					<div
 						className="win95-titlebar cursor-move"
 						onMouseDown={handleMouseDown}
 						onDoubleClick={(e) => e.preventDefault()}
-						onMouseEnter={() => {
-							setClippyMood("idle");
-							setClippyMessage("Probá mover las ventanas");
-						}}
-						onMouseLeave={() => {
-							setClippyMood("idle");
-							setClippyMessage(null);
-						}}
+						{...hoverHint}
 					>
 						<span className="flex items-center gap-1">
 							<span aria-hidden>🌐</span> Redes

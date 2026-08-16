@@ -1,4 +1,5 @@
-const TASKTRACK_API_URL = import.meta.env.VITE_TASKTRACK_API_URL || "https://tasktrack-go4j.onrender.com";
+const TASKTRACK_API_URL =
+	import.meta.env.VITE_TASKTRACK_API_URL || "https://tasktrack-go4j.onrender.com";
 
 /**
  * Dispara un ping fire-and-forget al /health del backend de TaskTrack en Render.

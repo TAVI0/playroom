@@ -2,9 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function TaskTrackPage() {
 	return (
-		<div
-			className="relative flex flex-col items-center justify-center min-h-screen bg-gray-950 text-gray-100 px-6 text-center overflow-hidden"
-		>
+		<div className="relative flex flex-col items-center justify-center min-h-screen bg-gray-950 text-gray-100 px-6 text-center overflow-hidden">
 			{/* Fondo con imagen */}
 			<img
 				src="https://imgur.com/cmXKarM.png"
@@ -19,15 +17,12 @@ export default function TaskTrackPage() {
 			<div className="relative z-10">
 				<h1 className="text-4xl font-bold mb-4">TaskTrack</h1>
 				<p className="max-w-md text-lg mb-8 text-gray-300">
-					Una aplicación simple para anotar tareas y llevar un registro de tus avances.
-					Crea listas, marca tus pendientes completados y visualiza tu progreso sin
-					complicaciones.
+					Una aplicación simple para anotar tareas y llevar un registro de tus avances. Crea listas,
+					marca tus pendientes completados y visualiza tu progreso sin complicaciones.
 				</p>
 				{/* Tecnologías */}
 				<div className="max-w-md mb-8 text-gray-400 text-sm">
-					<p className="font-semibold text-gray-300 mb-2">
-						Tecnologías utilizadas
-					</p>
+					<p className="font-semibold text-gray-300 mb-2">Tecnologías utilizadas</p>
 					<ul className="space-y-1">
 						<li>• Frontend: TypeScript + React</li>
 						<li>• Backend: Java + Spring Boot</li>

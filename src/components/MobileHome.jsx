@@ -29,9 +29,7 @@ export default function MobileHome() {
 		<div className="min-h-screen bg-win95-desktop flex flex-col gap-4 p-3 font-win95">
 			{/* 1. Bienvenido */}
 			<MobileSection title="Bienvenido.exe" icon="🖥️">
-				<h1 className="text-xl font-bold text-black mb-2 text-center">
-					{welcome.title}
-				</h1>
+				<h1 className="text-xl font-bold text-black mb-2 text-center">{welcome.title}</h1>
 				<p className="text-gray-800 text-center text-sm">{welcome.text}</p>
 			</MobileSection>
 
@@ -69,9 +67,7 @@ export default function MobileHome() {
 									className="w-full h-full object-cover"
 								/>
 							</div>
-							<span className="text-xs font-win95 leading-tight">
-								{project.name}
-							</span>
+							<span className="text-xs font-win95 leading-tight">{project.name}</span>
 						</button>
 					))}
 				</div>
@@ -81,16 +77,11 @@ export default function MobileHome() {
 			<MobileSection title="Skills" icon="🧰">
 				<div className="win95-inset bg-white p-3 grid grid-cols-3 gap-4">
 					{skills.map((skill) => (
-						<div
-							key={skill.name}
-							className="flex flex-col items-center gap-1 p-1 text-center"
-						>
+						<div key={skill.name} className="flex flex-col items-center gap-1 p-1 text-center">
 							<span className="text-3xl" aria-hidden>
 								{skill.icon}
 							</span>
-							<span className="text-xs font-win95 leading-tight text-black">
-								{skill.name}
-							</span>
+							<span className="text-xs font-win95 leading-tight text-black">{skill.name}</span>
 						</div>
 					))}
 				</div>

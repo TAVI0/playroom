@@ -2,6 +2,7 @@ export const projects = [
 	{
 		name: "TavioCoin",
 		icon: "🪙",
+		isWeb3: true,
 		image: "https://imgur.com/UDnfIkB.png",
 		images: [
 			"https://imgur.com/UDnfIkB.png",

@@ -1,11 +1,14 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { projects } from "../data/projects";
-import { useWindows } from "../context/WindowsContext";
+import { useWindows } from "../context/useWindows";
+import { useDraggableWindow } from "../hooks/useDraggableWindow";
+import { useHoverHint } from "../hooks/useHoverHint";
 import ProjectModal from "./ProjectModal";
+import { WINDOWS, Z_INDEX } from "../config/windows";
+import { CLIPPY_MOOD } from "../data/clippyMoods";
 
-const WINDOW_WIDTH = 640;
-const WINDOW_HEIGHT = 460;
+const { width: WINDOW_WIDTH, height: WINDOW_HEIGHT } = WINDOWS.projects;
 
 const getCenteredPos = () => ({
 	x: Math.max((window.innerWidth - WINDOW_WIDTH) / 2, 16),
@@ -14,58 +17,23 @@ const getCenteredPos = () => ({
 
 export default function ProjectsWindow({ initialPos }) {
 	const { showProjects, closeProjects, setClippyMessage, setClippyMood } = useWindows();
-	const modalRef = useRef(null);
-	const getInitialPos = () => initialPos || getCenteredPos();
-	const [pos, setPos] = useState(getInitialPos);
-	const [dragging, setDragging] = useState(false);
-	const [offset, setOffset] = useState({ x: 0, y: 0 });
+	const { modalRef, pos, handleMouseDown } = useDraggableWindow(
+		showProjects,
+		initialPos || getCenteredPos(),
+	);
+	const hoverHint = useHoverHint("Probá mover las ventanas");
 	const [selected, setSelected] = useState(null);
 	const [openWindows, setOpenWindows] = useState([]);
 
-	// Al reabrirla, siempre vuelve a su posición original (ignora dónde la dejó el usuario)
-	useEffect(() => {
-		if (showProjects) setPos(getInitialPos());
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [showProjects]);
-
-	useEffect(() => {
-		const handleMouseMove = (e) => {
-			if (!dragging) return;
-			setPos({
-				x: e.clientX - offset.x,
-				y: e.clientY - offset.y,
-			});
-		};
-
-		const handleMouseUp = () => setDragging(false);
-
-		window.addEventListener("mousemove", handleMouseMove);
-		window.addEventListener("mouseup", handleMouseUp);
-
-		return () => {
-			window.removeEventListener("mousemove", handleMouseMove);
-			window.removeEventListener("mouseup", handleMouseUp);
-		};
-	}, [dragging, offset]);
-
-	const handleMouseDown = (e) => {
-		setDragging(true);
-		const rect = modalRef.current.getBoundingClientRect();
-		setOffset({
-			x: e.clientX - rect.left,
-			y: e.clientY - rect.top,
-		});
-	};
-
 	const handleSelect = (project) => {
 		setSelected(project.name);
-		setClippyMood("doubleclick");
+		setClippyMood(CLIPPY_MOOD.DOUBLECLICK);
 		setClippyMessage("¡Hacé doble clic!");
 	};
 
 	const handleOpenApp = (e, project) => {
 		setSelected(project.name);
-		setClippyMood("idle");
+		setClippyMood(CLIPPY_MOOD.IDLE);
 		setClippyMessage(null);
 		const rect = e.currentTarget.getBoundingClientRect();
 		setOpenWindows((prev) => {
@@ -103,21 +71,14 @@ export default function ProjectsWindow({ initialPos }) {
 							x: { type: "tween", duration: 0 },
 							y: { type: "tween", duration: 0 },
 						}}
-						className="win95-window fixed z-40 w-[92vw] p-[3px] font-win95 select-none"
-						style={{ top: 0, left: 0, maxWidth: WINDOW_WIDTH }}
+						className="win95-window fixed w-[92vw] p-[3px] font-win95 select-none"
+						style={{ top: 0, left: 0, maxWidth: WINDOW_WIDTH, zIndex: Z_INDEX.desktopWindow }}
 						onClick={() => setSelected(null)}
 					>
 						<div
 							className="win95-titlebar cursor-move"
 							onMouseDown={handleMouseDown}
-							onMouseEnter={() => {
-								setClippyMood("idle");
-								setClippyMessage("Probá mover las ventanas");
-							}}
-							onMouseLeave={() => {
-								setClippyMood("idle");
-								setClippyMessage(null);
-							}}
+							{...hoverHint}
 						>
 							<span className="flex items-center gap-1 truncate">
 								<span aria-hidden>📁</span> Proyectos
@@ -152,17 +113,15 @@ export default function ProjectsWindow({ initialPos }) {
 									onClick={() => handleSelect(project)}
 									onDoubleClick={(e) => handleOpenApp(e, project)}
 									onMouseEnter={() => {
-										setClippyMood("idle");
+										setClippyMood(CLIPPY_MOOD.IDLE);
 										setClippyMessage(project.hoverMessage);
 									}}
 									onMouseLeave={() => {
-										setClippyMood("idle");
+										setClippyMood(CLIPPY_MOOD.IDLE);
 										setClippyMessage(null);
 									}}
 									className={`flex flex-col items-center gap-1 p-2 rounded-sm text-center ${
-										selected === project.name
-											? "bg-win95-navy text-white"
-											: "text-black"
+										selected === project.name ? "bg-win95-navy text-white" : "text-black"
 									}`}
 								>
 									<div className="w-14 h-14 overflow-hidden rounded-sm">
@@ -172,9 +131,7 @@ export default function ProjectsWindow({ initialPos }) {
 											className="w-full h-full object-cover"
 										/>
 									</div>
-									<span className="text-xs font-win95 leading-tight">
-										{project.name}
-									</span>
+									<span className="text-xs font-win95 leading-tight">{project.name}</span>
 								</button>
 							))}
 						</div>

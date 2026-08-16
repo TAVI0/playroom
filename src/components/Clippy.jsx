@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { useWindows } from "../context/WindowsContext";
+import { useWindows } from "../context/useWindows";
+import { Z_INDEX } from "../config/windows";
+import { CLIPPY_MOOD } from "../data/clippyMoods";
 
 // TODO: reemplazar por GIFs/imagen propios de Clippie cuando estén listos.
 const CLIPPY_IDLE_GIF = "https://media.tenor.com/mFNhFzLedEsAAAAj/clippy.gif";
@@ -29,21 +31,24 @@ export default function Clippy() {
 
 	const gif = spawning
 		? CLIPPY_SPAWN_GIF
-		: clippyMood === "download"
-		? CLIPPY_DOWNLOAD_GIF
-		: clippyMood === "shovel"
-		? CLIPPY_SHOVEL_GIF
-		: clippyMood === "reading"
-		? CLIPPY_READING_GIF
-		: clippyMood === "doubleclick"
-		? CLIPPY_DOUBLECLICK_GIF
-		: clippyMessage
-		? CLIPPY_TALK_GIF
-		: CLIPPY_IDLE_GIF;
+		: clippyMood === CLIPPY_MOOD.DOWNLOAD
+			? CLIPPY_DOWNLOAD_GIF
+			: clippyMood === CLIPPY_MOOD.SHOVEL
+				? CLIPPY_SHOVEL_GIF
+				: clippyMood === CLIPPY_MOOD.READING
+					? CLIPPY_READING_GIF
+					: clippyMood === CLIPPY_MOOD.DOUBLECLICK
+						? CLIPPY_DOUBLECLICK_GIF
+						: clippyMessage
+							? CLIPPY_TALK_GIF
+							: CLIPPY_IDLE_GIF;
 	const message = spawnMessageVisible ? "¡Hola! Soy Clippie" : clippyMessage;
 
 	return (
-		<div className="fixed bottom-16 right-4 z-[60] flex flex-col items-end gap-1 font-win95">
+		<div
+			className="fixed bottom-16 right-4 flex flex-col items-end gap-1 font-win95"
+			style={{ zIndex: Z_INDEX.clippy }}
+		>
 			<AnimatePresence>
 				{message && (
 					<motion.div
@@ -69,7 +74,15 @@ export default function Clippy() {
 
 			<div className="w-28 h-28 flex items-center justify-center text-8xl select-none">
 				<img
-					key={spawning ? "spawn" : clippyMood !== "idle" ? clippyMood : clippyMessage ? "talk" : "idle"}
+					key={
+						spawning
+							? "spawn"
+							: clippyMood !== CLIPPY_MOOD.IDLE
+								? clippyMood
+								: clippyMessage
+									? "talk"
+									: "idle"
+					}
 					src={gif}
 					alt="Clippie"
 					className="w-full h-full object-contain"

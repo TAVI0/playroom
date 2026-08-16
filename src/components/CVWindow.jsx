@@ -1,57 +1,22 @@
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useWindows } from "../context/WindowsContext";
+import { AnimatePresence, motion } from "framer-motion";
+import { useWindows } from "../context/useWindows";
+import { useDraggableWindow } from "../hooks/useDraggableWindow";
+import { useHoverHint } from "../hooks/useHoverHint";
 import { CV_PATH, CV_FILENAME } from "../data/cv";
+import { WINDOWS, Z_INDEX } from "../config/windows";
+import { CLIPPY_MOOD } from "../data/clippyMoods";
 
-const WINDOW_WIDTH = 460;
-const WINDOW_HEIGHT = 600;
+const { width: WINDOW_WIDTH, height: WINDOW_HEIGHT } = WINDOWS.cv;
+const READING_HINT = "¿Algo que te llame la atención?";
 
 export default function CVWindow({ open, onClose, initialPos }) {
 	const { triggerCVDownload, setClippyMood, setClippyMessage } = useWindows();
-	const modalRef = useRef(null);
-	const [pos, setPos] = useState(
-		initialPos || {
-			x: Math.max((window.innerWidth - WINDOW_WIDTH) / 2, 16),
-			y: Math.max((window.innerHeight - WINDOW_HEIGHT) / 2, 16),
-		}
-	);
-	const [dragging, setDragging] = useState(false);
-	const [offset, setOffset] = useState({ x: 0, y: 0 });
-
-	// Al reabrirla, siempre vuelve a su rincón original (ignora dónde la dejó el usuario)
-	useEffect(() => {
-		if (open) setPos(initialPos || pos);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [open]);
-
-	useEffect(() => {
-		const handleMouseMove = (e) => {
-			if (!dragging) return;
-			setPos({
-				x: e.clientX - offset.x,
-				y: e.clientY - offset.y,
-			});
-		};
-
-		const handleMouseUp = () => setDragging(false);
-
-		window.addEventListener("mousemove", handleMouseMove);
-		window.addEventListener("mouseup", handleMouseUp);
-
-		return () => {
-			window.removeEventListener("mousemove", handleMouseMove);
-			window.removeEventListener("mouseup", handleMouseUp);
-		};
-	}, [dragging, offset]);
-
-	const handleMouseDown = (e) => {
-		setDragging(true);
-		const rect = modalRef.current.getBoundingClientRect();
-		setOffset({
-			x: e.clientX - rect.left,
-			y: e.clientY - rect.top,
-		});
+	const fallbackPos = {
+		x: Math.max((window.innerWidth - WINDOW_WIDTH) / 2, 16),
+		y: Math.max((window.innerHeight - WINDOW_HEIGHT) / 2, 16),
 	};
+	const { modalRef, pos, handleMouseDown } = useDraggableWindow(open, initialPos || fallbackPos);
+	const windowHoverHint = useHoverHint(READING_HINT, CLIPPY_MOOD.READING);
 
 	return (
 		<AnimatePresence>
@@ -66,28 +31,21 @@ export default function CVWindow({ open, onClose, initialPos }) {
 						x: { type: "tween", duration: 0 },
 						y: { type: "tween", duration: 0 },
 					}}
-					className="win95-window fixed z-40 w-[92vw] p-[3px] font-win95 select-none"
-					style={{ top: 0, left: 0, maxWidth: WINDOW_WIDTH }}
-					onMouseEnter={() => {
-						setClippyMood("reading");
-						setClippyMessage("¿Algo que te llame la atención?");
-					}}
-					onMouseLeave={() => {
-						setClippyMood("idle");
-						setClippyMessage(null);
-					}}
+					className="win95-window fixed w-[92vw] p-[3px] font-win95 select-none"
+					style={{ top: 0, left: 0, maxWidth: WINDOW_WIDTH, zIndex: Z_INDEX.desktopWindow }}
+					{...windowHoverHint}
 				>
 					{/* Barra de título */}
 					<div
 						className="win95-titlebar cursor-move"
 						onMouseDown={handleMouseDown}
 						onMouseEnter={() => {
-							setClippyMood("idle");
+							setClippyMood(CLIPPY_MOOD.IDLE);
 							setClippyMessage("Probá mover las ventanas");
 						}}
 						onMouseLeave={() => {
-							setClippyMood("reading");
-							setClippyMessage("¿Algo que te llame la atención?");
+							setClippyMood(CLIPPY_MOOD.READING);
+							setClippyMessage(READING_HINT);
 						}}
 					>
 						<span className="flex items-center gap-1 truncate">
@@ -129,12 +87,12 @@ export default function CVWindow({ open, onClose, initialPos }) {
 							href={CV_PATH}
 							download={CV_FILENAME}
 							onMouseEnter={() => {
-								setClippyMood("download");
+								setClippyMood(CLIPPY_MOOD.DOWNLOAD);
 								setClippyMessage("¿Te llevás una copia?");
 							}}
 							onMouseLeave={() => {
-								setClippyMood("reading");
-								setClippyMessage("¿Algo que te llame la atención?");
+								setClippyMood(CLIPPY_MOOD.READING);
+								setClippyMessage(READING_HINT);
 							}}
 							onClick={triggerCVDownload}
 							className="win95-btn px-4 py-1 text-sm font-win95"

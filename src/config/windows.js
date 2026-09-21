@@ -8,6 +8,7 @@ export const WINDOWS = {
 	skills: { width: 320, height: 140 },
 	projects: { width: 640, height: 460 },
 	cv: { width: 460, height: 600 },
+	chatbot: { width: 340, height: 420 },
 };
 
 // Capas semánticas de apilamiento, de más abajo a más arriba.

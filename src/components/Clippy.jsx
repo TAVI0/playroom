@@ -16,7 +16,7 @@ const SPAWN_GIF_DURATION = 550; // dura exactamente un loop del gif, para que no
 const SPAWN_MESSAGE_DURATION = SPAWN_GIF_DURATION + 3000; // el saludo queda 3s más en pantalla
 
 export default function Clippy() {
-	const { clippyMessage, clippyMood } = useWindows();
+	const { clippyMessage, clippyMood, toggleChatbot } = useWindows();
 	const [spawning, setSpawning] = useState(true);
 	const [spawnMessageVisible, setSpawnMessageVisible] = useState(true);
 
@@ -72,7 +72,11 @@ export default function Clippy() {
 				)}
 			</AnimatePresence>
 
-			<div className="w-28 h-28 flex items-center justify-center text-8xl select-none">
+			<div
+				className="w-28 h-28 flex items-center justify-center text-8xl select-none cursor-pointer"
+				onClick={toggleChatbot}
+				title="Preguntale algo a Clippie"
+			>
 				<img
 					key={
 						spawning

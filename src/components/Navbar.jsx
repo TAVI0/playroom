@@ -7,6 +7,7 @@ import CVWindow from "./CVWindow";
 import WelcomeWindow from "./WelcomeWindow";
 import AboutMeWindow from "./AboutMeWindow";
 import SkillsWindow from "./SkillsWindow";
+import ChatbotWindow from "./ChatbotWindow";
 import Clippy from "./Clippy";
 import { useWindows } from "../context/useWindows";
 import { WINDOWS, Z_INDEX } from "../config/windows";
@@ -33,6 +34,8 @@ export default function Navbar() {
 		toggleProjects,
 		showCV,
 		toggleCV,
+		showChatbot,
+		toggleChatbot,
 	} = useWindows();
 
 	useEffect(() => {
@@ -153,6 +156,14 @@ export default function Navbar() {
 				initialPos={{
 					x: Math.max((window.innerWidth - WINDOWS.aboutMe.width) / 2, 16),
 					y: ABOUT_ALIGN_Y,
+				}}
+			/>
+			<ChatbotWindow
+				open={showChatbot}
+				onClose={toggleChatbot}
+				initialPos={{
+					x: Math.max(window.innerWidth - WINDOWS.chatbot.width - 24, 16),
+					y: Math.max(window.innerHeight - WINDOWS.chatbot.height - 140, 16),
 				}}
 			/>
 			<Clippy />

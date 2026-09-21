@@ -1,0 +1,88 @@
+{
+	"_proposito": "Fuente de verdad editada a mano para el chatbot RAG del portfolio -- todo lo que el chatbot deberia poder responder vive aca (CV inicialmente, y se va a ir sumando info de proyectos u otros datos relevantes). generar-embeddings.mjs lee ESTE archivo directo, no HTML/JS scrapeado con regex.",
+	"_fuenteOriginalCV": "C:/Users/Tavio/Documents/proyectos/Yo/Area/BusquedaLaboral/CV_ES/cv_base.html (base del contenido inicial de este archivo, no se vuelve a leer en el pipeline)",
+	"nombre": "Marcos Tavio",
+	"contacto": {
+		"email": "marcos_tavio@outlook.com",
+		"telefono": "3456-460831",
+		"ubicacion": "Buenos Aires, Argentina",
+		"linkedin": "https://www.linkedin.com/in/mtavio/",
+		"github": "https://github.com/TAVI0"
+	},
+	"perfilProfesional": "Desarrollador Backend con experiencia en microservicios y APIs REST usando Java, Spring Boot, SQL, Docker y Hibernate. Enfocado en performance y estabilidad con impacto medible (ej. tiempos de respuesta de segundos a milisegundos), aplicando patrones de diseño y principios SOLID. Incorpora herramientas de IA (Claude Code, SDD) al flujo de trabajo diario.",
+	"habilidadesTecnicas": {
+		"lenguajes": ["Java (8/11/21/25)", "JavaScript", "Node.js", "Python", "Solidity"],
+		"frameworksYLibrerias": ["Spring Boot", "Spring Security", "React", "Hibernate", "MyBatis"],
+		"basesDeDatos": ["MySQL", "PostgreSQL", "Oracle", "MongoDB"],
+		"seguridad": ["JWT", "Keycloak/OIDC (OpenID Connect)"],
+		"herramientas": ["Postman", "Git", "Bitbucket", "Jira", "Confluence", "Sonar/JaCoCo", "Dynatrace"],
+		"buildTools": ["Maven", "Gradle"],
+		"mensajeria": ["Kafka"],
+		"servidoresYCicd": ["Jenkins", "Apache Tomcat", "Docker", "OpenShift"],
+		"cloud": ["AWS (EC2, S3, Lambda) -- proyectos personales"],
+		"metodologias": ["Scrum", "Kanban"]
+	},
+	"experiencia": [
+		{
+			"empresa": "CFOTech",
+			"puesto": "Software Developer",
+			"periodo": "Febrero 2026 – Agosto 2026",
+			"logros": [
+				"Eliminó una dependencia interna cercana a deprecación en la API externa de partners, reemplazándola por una implementación propia con MyBatis directo contra Oracle, sin perder funcionalidad.",
+				"Detectó un cuello de botella en el endpoint principal (13,88s): implementó cacheo con Caffeine y lo bajó a 5,3ms (~2.600x más rápido).",
+				"Mantuvo las APIs actualizadas frente a cambios en microservicios asociados, evitando roturas downstream.",
+				"Remedió vulnerabilidades de Spring Security en múltiples servicios."
+			]
+		},
+		{
+			"empresa": "Stefanini LATAM",
+			"puesto": "Software Developer",
+			"periodo": "Junio 2025 – Noviembre 2025",
+			"logros": [
+				"Diseñó y desarrolló microservicios distribuidos con Spring Boot para alta concurrencia y resiliencia, sosteniendo carga transaccional creciente sin degradar el servicio.",
+				"Implementó mensajería asíncrona con Kafka para desacoplar servicios y procesar eventos.",
+				"Construyó integraciones complejas con APIs de plataformas de viajes, manejando múltiples flujos transaccionales y proveedores externos.",
+				"Optimizó consultas y accesos en PostgreSQL y MongoDB bajo alta carga.",
+				"Incorporó tests automatizados (JUnit/Mockito) sobre código heredado, reduciendo defectos regresivos."
+			]
+		},
+		{
+			"empresa": "Artekium Technology Studio",
+			"puesto": "Software Developer",
+			"periodo": "Abril 2021 – Junio 2025",
+			"logros": [
+				"Desarrolló APIs RESTful y servicios backend con Spring Boot para productos del sector asegurador y e-commerce.",
+				"Modeló consultas de datos en PostgreSQL para soportar los flujos funcionales de esos productos.",
+				"Cubrió el ciclo completo de mantenimiento (resolución de bugs, análisis de fallas, soporte a equipos funcionales), manteniendo la estabilidad de sistemas en producción.",
+				"Construyó pipelines de generación automática de reportes PDF con Jaspersoft, integrados al flujo operativo de los clientes.",
+				"Desarrolló conectores personalizados con Mercado Libre para integrar soluciones de marketplace.",
+				"Escribió suites de tests unitarios y de integración para fortalecer la estabilidad del código.",
+				"Automatizó tareas y procesamiento de datos de soporte al equipo con scripts en Python.",
+				"Participó activamente en code reviews del equipo, promoviendo buenas prácticas de ingeniería y calidad de código."
+			]
+		},
+		{
+			"empresa": "Alkemy",
+			"puesto": "Software Developer",
+			"periodo": "Febrero 2021 – Abril 2021",
+			"logros": [
+				"Participó en el desarrollo desde cero de un software para una ONG, aplicando Scrum para la gestión del equipo y del proyecto.",
+				"Gestionó el código en un entorno colaborativo usando Git y Bitbucket."
+			]
+		}
+	],
+	"educacion": [
+		"Tecnicatura Superior en Informática Aplicada | UTN - INSPT | 2019",
+		"Introducción a la programación y POO - Python | CFP n°18 | 2019 - 2021",
+		"Bases de Datos - SQL | CFP n°18 | 2019 - 2021"
+	],
+	"idiomas": {
+		"español": "Nativo",
+		"ingles": "B1"
+	},
+	"_verificacionConEmbeddingsJson": {
+		"totalEmpresasEnCV": 4,
+		"empresas": ["CFOTech", "Stefanini LATAM", "Artekium Technology Studio", "Alkemy"],
+		"nota": "Las 4 experiencias SI estan presentes en api/_data/embeddings.json (confirmado con grep) -- el problema NO es de indexado. El chatbot omitio CFOTech en una respuesta real por limitacion de retrieval (top_k=3 sobre 4 chunks de trabajos casi igual de 'parecidos' a la pregunta generica 'las empresas donde trabajo') -- ver Fase4-Aprendizajes.md en el vault, seccion del proyecto playroom, para el fix aplicado."
+	}
+}

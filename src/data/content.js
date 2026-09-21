@@ -5,6 +5,6 @@ export const welcome = {
 
 export const aboutMe = {
 	name: "Marcos Tavio",
-	role: "Desarrollador Full Stack",
+	role: "Desarrollador Full Stack + IA Engineer",
 	bio: "Me gusta armar aplicaciones de punta a punta, del backend a la interfaz, y darle una vuelta de rosca divertida a cada proyecto (como este playroom).",
 };

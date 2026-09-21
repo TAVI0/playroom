@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 // Lógica compartida de arrastre + reseteo de posición al reabrir,
-// usada por todas las ventanas estilo Win95 (Redes, CV, Proyectos, etc).
+// usada por todas las ventanas estilo XP (Redes, CV, Proyectos, etc).
 //
 // startPos (opcional): punto de origen de la animación de apertura cuando
 // difiere de la posición de reposo (initialPos) — por ejemplo, ventanas que

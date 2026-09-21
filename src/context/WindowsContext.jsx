@@ -9,7 +9,6 @@ export function WindowsProvider({ children }) {
 	const [showSkills, setShowSkills] = useState(true);
 	const [showProjects, setShowProjects] = useState(true);
 	const [showCV, setShowCV] = useState(true);
-	const [showChatbot, setShowChatbot] = useState(false); // arranca cerrado, se abre clickeando a Clippy
 	const [clippyMessage, setClippyMessage] = useState(null);
 	const [clippyMood, setClippyMood] = useState(CLIPPY_MOOD.IDLE); // ver valores posibles en CLIPPY_MOOD
 
@@ -52,11 +51,6 @@ export function WindowsProvider({ children }) {
 		openCV: () => setShowCV(true),
 		closeCV: () => setShowCV(false),
 		toggleCV: () => setShowCV((v) => !v),
-
-		showChatbot,
-		openChatbot: () => setShowChatbot(true),
-		closeChatbot: () => setShowChatbot(false),
-		toggleChatbot: () => setShowChatbot((v) => !v),
 
 		clippyMessage,
 		setClippyMessage,

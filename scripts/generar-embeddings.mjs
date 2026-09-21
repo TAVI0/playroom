@@ -7,6 +7,7 @@
  *
  * Requiere: variable de entorno VOYAGE_API_KEY seteada (en esta terminal).
  * Correr con: node scripts/generar-embeddings.mjs
+ * Preview sin gastar llamadas a Voyage: node scripts/generar-embeddings.mjs --dry-run
  */
 
 import { readFileSync, writeFileSync } from "node:fs";
@@ -16,7 +17,7 @@ import path from "node:path";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const VOYAGE_API_KEY = process.env.VOYAGE_API_KEY;
-if (!VOYAGE_API_KEY) {
+if (!VOYAGE_API_KEY && !process.argv.includes("--dry-run")) {
 	throw new Error("Falta VOYAGE_API_KEY en el entorno.");
 }
 
@@ -36,6 +37,12 @@ function chunkearCV() {
 
 	chunks.push(`Perfil profesional de Marcos Tavio: ${cv.perfilProfesional}`);
 
+	const c = cv.contacto;
+	chunks.push(
+		`Datos de contacto de Marcos Tavio: email ${c.email}, telefono ${c.telefono}, ` +
+			`ubicado en ${c.ubicacion}. LinkedIn: ${c.linkedin}. GitHub: ${c.github}.`,
+	);
+
 	const h = cv.habilidadesTecnicas;
 	chunks.push(
 		`Habilidades tecnicas de Marcos Tavio: ` +
@@ -51,12 +58,21 @@ function chunkearCV() {
 			`Metodologias: ${h.metodologias.join(", ")}.`,
 	);
 
-	// cada experiencia laboral es su propio chunk -- respeta el limite natural
-	// de la idea (una experiencia = un tema), como aprendimos en Fase 4.
+	// Cada experiencia laboral se separa en DOS chunks, no uno solo:
+	// - "identidad" (corto, generico) -- rankea bien contra preguntas amplias
+	//   tipo "donde trabajo". Antes, mezclar identidad + logros tecnicos en un
+	//   solo chunk diluia el embedding hacia el lado tecnico (texto largo con
+	//   jerga especifica pesa mas que la parte generica), y ese chunk perdia
+	//   contra otros mas cortos/genericos en el ranking de similaridad --
+	//   confirmado empiricamente: CFOTech quedaba afuera del top-k en
+	//   produccion mientras Alkemy (chunk corto y generico) rankeaba primero.
+	// - "detalle" (los logros tecnicos) -- para preguntas especificas tipo
+	//   "que hizo con Kafka en Stefanini".
 	for (const job of cv.experiencia) {
+		chunks.push(`Marcos Tavio trabajó en ${job.empresa} como ${job.puesto} entre ${job.periodo}.`);
 		chunks.push(
-			`Experiencia laboral de Marcos Tavio: ${job.empresa} — ${job.puesto} ` +
-				`(${job.periodo}). ${job.logros.join(" ")}`,
+			`Detalle de la experiencia de Marcos Tavio en ${job.empresa} (${job.puesto}, ${job.periodo}): ` +
+				job.logros.join(" "),
 		);
 	}
 
@@ -114,7 +130,17 @@ async function main() {
 		...(await chunkearSkills()),
 	];
 
-	console.log(`Generando embeddings para ${chunksTexto.length} chunks (1 sola llamada a Voyage)...`);
+	if (process.argv.includes("--dry-run")) {
+		console.log(
+			`--dry-run: ${chunksTexto.length} chunks (no se llama a Voyage, no se escribe nada):\n`,
+		);
+		chunksTexto.forEach((t, i) => console.log(`${i + 1}. ${t}\n`));
+		return;
+	}
+
+	console.log(
+		`Generando embeddings para ${chunksTexto.length} chunks (1 sola llamada a Voyage)...`,
+	);
 	const embeddings = await generarEmbeddings(chunksTexto);
 	const chunks = chunksTexto.map((texto, i) => ({ texto, embedding: embeddings[i] }));
 	chunks.forEach((c) => console.log(`  OK: ${c.texto.slice(0, 70)}...`));

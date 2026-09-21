@@ -33,28 +33,28 @@ export default function ContactModal({ open, onClose, clickPos }) {
 						x: { type: "tween", duration: 0 },
 						y: { type: "tween", duration: 0 },
 					}}
-					className="win95-window fixed w-80 p-[3px] font-win95 select-none"
+					className="win-window fixed w-80 p-[3px] font-win select-none"
 					style={{ top: 0, left: 0, zIndex: Z_INDEX.modal }}
 				>
-					<div className="win95-titlebar cursor-move" onMouseDown={handleMouseDown} {...hoverHint}>
+					<div className="win-titlebar cursor-move" onMouseDown={handleMouseDown} {...hoverHint}>
 						<span className="flex items-center gap-1">
 							<span aria-hidden>💬</span> Contacto
 						</span>
 						<div className="flex items-center gap-[2px]">
-							<button className="win95-title-btn" tabIndex={-1}>
+							<button className="win-title-btn" tabIndex={-1}>
 								_
 							</button>
-							<button className="win95-title-btn" tabIndex={-1}>
+							<button className="win-title-btn" tabIndex={-1}>
 								□
 							</button>
-							<button onClick={onClose} className="win95-title-btn">
+							<button onClick={onClose} className="win-title-btn">
 								×
 							</button>
 						</div>
 					</div>
 
-					<div className="bg-win95-face p-3">
-						<div className="win95-inset bg-white text-black p-3">
+					<div className="bg-win-face p-3">
+						<div className="win-inset bg-white text-black p-3">
 							<p className="font-bold mb-2">Podés contactarme en:</p>
 							<ul className="space-y-1.5">
 								<li className="flex items-center gap-2">
@@ -62,7 +62,7 @@ export default function ContactModal({ open, onClose, clickPos }) {
 									<span className="text-gray-700">Email:</span>
 									<a
 										href="mailto:marcos@example.com"
-										className="text-win95-navy underline hover:text-win95-navylight"
+										className="text-win-navy underline hover:text-win-navylight"
 									>
 										marcos@example.com
 									</a>
@@ -74,7 +74,7 @@ export default function ContactModal({ open, onClose, clickPos }) {
 										href="https://instagram.com/marcos"
 										target="_blank"
 										rel="noreferrer"
-										className="text-win95-navy underline hover:text-win95-navylight"
+										className="text-win-navy underline hover:text-win-navylight"
 									>
 										@marcos
 									</a>
@@ -86,7 +86,7 @@ export default function ContactModal({ open, onClose, clickPos }) {
 										href="https://linkedin.com/in/marcos"
 										target="_blank"
 										rel="noreferrer"
-										className="text-win95-navy underline hover:text-win95-navylight"
+										className="text-win-navy underline hover:text-win-navylight"
 									>
 										Marcos Tavio
 									</a>

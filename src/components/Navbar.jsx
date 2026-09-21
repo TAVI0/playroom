@@ -7,7 +7,6 @@ import CVWindow from "./CVWindow";
 import WelcomeWindow from "./WelcomeWindow";
 import AboutMeWindow from "./AboutMeWindow";
 import SkillsWindow from "./SkillsWindow";
-import ChatbotWindow from "./ChatbotWindow";
 import Clippy from "./Clippy";
 import { useWindows } from "../context/useWindows";
 import { WINDOWS, Z_INDEX } from "../config/windows";
@@ -34,8 +33,6 @@ export default function Navbar() {
 		toggleProjects,
 		showCV,
 		toggleCV,
-		showChatbot,
-		toggleChatbot,
 	} = useWindows();
 
 	useEffect(() => {
@@ -48,19 +45,19 @@ export default function Navbar() {
 
 	return (
 		<>
-			{/* Barra de tareas estilo Windows 95 */}
+			{/* Barra de tareas estilo Windows XP */}
 			<nav
-				className="fixed bottom-0 left-0 right-0 win95-raised bg-win95-face flex items-center gap-2 px-1 py-1 font-win95"
+				className="fixed bottom-0 left-0 right-0 win-raised bg-win-face flex items-center gap-2 px-1 py-1 font-win"
 				style={{ zIndex: Z_INDEX.desktopWindow }}
 			>
-				<Link to="/" className="win95-btn flex items-center gap-1 px-2 py-1 text-sm font-bold">
+				<Link to="/" className="win-btn flex items-center gap-1 px-2 py-1 text-sm font-bold">
 					🪟 Tavio's Playroom
 				</Link>
 
 				<button
 					onClick={toggleWelcome}
 					className={`flex items-center gap-1 px-2 py-1 text-sm ${
-						showWelcome ? "win95-btn-pressed" : "win95-btn"
+						showWelcome ? "win-btn-pressed" : "win-btn"
 					}`}
 				>
 					🖥️ Bienvenido
@@ -69,7 +66,7 @@ export default function Navbar() {
 				<button
 					onClick={toggleAboutMe}
 					className={`flex items-center gap-1 px-2 py-1 text-sm ${
-						showAboutMe ? "win95-btn-pressed" : "win95-btn"
+						showAboutMe ? "win-btn-pressed" : "win-btn"
 					}`}
 				>
 					🧑‍💻 AboutMe
@@ -78,7 +75,7 @@ export default function Navbar() {
 				<button
 					onClick={toggleCV}
 					className={`flex items-center gap-1 px-2 py-1 text-sm ${
-						showCV ? "win95-btn-pressed" : "win95-btn"
+						showCV ? "win-btn-pressed" : "win-btn"
 					}`}
 				>
 					📄 CV
@@ -87,7 +84,7 @@ export default function Navbar() {
 				<button
 					onClick={toggleProjects}
 					className={`flex items-center gap-1 px-2 py-1 text-sm ${
-						showProjects ? "win95-btn-pressed" : "win95-btn"
+						showProjects ? "win-btn-pressed" : "win-btn"
 					}`}
 				>
 					📁 Proyectos
@@ -96,7 +93,7 @@ export default function Navbar() {
 				<button
 					onClick={toggleSocial}
 					className={`flex items-center gap-1 px-2 py-1 text-sm ${
-						showSocial ? "win95-btn-pressed" : "win95-btn"
+						showSocial ? "win-btn-pressed" : "win-btn"
 					}`}
 				>
 					🌐 Redes
@@ -105,13 +102,13 @@ export default function Navbar() {
 				<button
 					onClick={toggleSkills}
 					className={`flex items-center gap-1 px-2 py-1 text-sm ${
-						showSkills ? "win95-btn-pressed" : "win95-btn"
+						showSkills ? "win-btn-pressed" : "win-btn"
 					}`}
 				>
 					🧰 Skills
 				</button>
 
-				<div className="ml-auto win95-inset px-2 py-1 text-sm">{clock}</div>
+				<div className="ml-auto win-inset px-2 py-1 text-sm">{clock}</div>
 			</nav>
 
 			<ContactModal
@@ -156,14 +153,6 @@ export default function Navbar() {
 				initialPos={{
 					x: Math.max((window.innerWidth - WINDOWS.aboutMe.width) / 2, 16),
 					y: ABOUT_ALIGN_Y,
-				}}
-			/>
-			<ChatbotWindow
-				open={showChatbot}
-				onClose={toggleChatbot}
-				initialPos={{
-					x: Math.max(window.innerWidth - WINDOWS.chatbot.width - 24, 16),
-					y: Math.max(window.innerHeight - WINDOWS.chatbot.height - 140, 16),
 				}}
 			/>
 			<Clippy />

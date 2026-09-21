@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import ReactMarkdown from "react-markdown";
 import { useWindows } from "../context/useWindows";
 import { Z_INDEX } from "../config/windows";
 import { CLIPPY_MOOD } from "../data/clippyMoods";
@@ -15,10 +16,37 @@ const CLIPPY_SPAWN_GIF = "https://media.tenor.com/V1tphaHNhW4AAAAj/clippy.gif";
 const SPAWN_GIF_DURATION = 550; // dura exactamente un loop del gif, para que no se repita
 const SPAWN_MESSAGE_DURATION = SPAWN_GIF_DURATION + 3000; // el saludo queda 3s más en pantalla
 
+const MENSAJE_INICIAL = {
+	autor: "bot",
+	texto: "¡Hola! Preguntame lo que quieras sobre la experiencia, skills o proyectos de Marcos.",
+};
+
+// El bot responde en markdown (negrita, listas) -- overrides compactos para
+// que entren bien en el panel chico, sin los margenes grandes de un articulo.
+const MARKDOWN_COMPONENTS = {
+	p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>,
+	ul: ({ children }) => <ul className="list-disc pl-4 my-1 space-y-0.5">{children}</ul>,
+	ol: ({ children }) => <ol className="list-decimal pl-4 my-1 space-y-0.5">{children}</ol>,
+	li: ({ children }) => <li>{children}</li>,
+	strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+};
+
 export default function Clippy() {
-	const { clippyMessage, clippyMood, toggleChatbot } = useWindows();
+	// clippyMessage/clippyMood: SOLO para hover-hints de otras ventanas (ver
+	// useHoverHint) -- el chat NO los toca, vive en estado local propio para
+	// que la conversacion persista sin importar que pase con los hints.
+	const { clippyMessage, clippyMood } = useWindows();
 	const [spawning, setSpawning] = useState(true);
 	const [spawnMessageVisible, setSpawnMessageVisible] = useState(true);
+
+	const [mensajes, setMensajes] = useState([MENSAJE_INICIAL]);
+	const [chatInput, setChatInput] = useState("");
+	const [enviando, setEnviando] = useState(false);
+	const listaRef = useRef(null);
+
+	// El hint de otra ventana (hover) pisa momentaneamente al chat -- solo
+	// mientras dura el hover, el propio useHoverHint lo limpia al salir.
+	const hayHint = !spawnMessageVisible && Boolean(clippyMessage);
 
 	useEffect(() => {
 		const gifTimer = setTimeout(() => setSpawning(false), SPAWN_GIF_DURATION);
@@ -28,6 +56,47 @@ export default function Clippy() {
 			clearTimeout(messageTimer);
 		};
 	}, []);
+
+	// Autoscroll de la lista de mensajes cada vez que cambia la conversacion,
+	// y tambien cuando el panel de chat vuelve a aparecer despues de un hint
+	// -- se desmonta/remonta (AnimatePresence), asi que el scrollTop nace en
+	// 0 de nuevo cada vez y hay que reposicionarlo al fondo explicitamente.
+	useEffect(() => {
+		listaRef.current?.scrollTo({ top: listaRef.current.scrollHeight });
+	}, [mensajes, enviando, hayHint]);
+
+	const preguntar = async () => {
+		const pregunta = chatInput.trim();
+		if (!pregunta || enviando) return;
+
+		setMensajes((prev) => [...prev, { autor: "user", texto: pregunta }]);
+		setChatInput("");
+		setEnviando(true);
+
+		try {
+			const resp = await fetch("/api/chat", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ pregunta }),
+			});
+			const data = await resp.json();
+			const texto = resp.ok ? data.respuesta : data.error || "Algo salió mal, intentá de nuevo.";
+			setMensajes((prev) => [...prev, { autor: "bot", texto }]);
+		} catch {
+			setMensajes((prev) => [
+				...prev,
+				{ autor: "bot", texto: "No pude conectarme al chat. Intentá de nuevo en un rato." },
+			]);
+		} finally {
+			setEnviando(false);
+		}
+	};
+
+	const handleKeyDown = (e) => {
+		if (e.key === "Enter") preguntar();
+	};
+
+	const mensajeHint = spawnMessageVisible ? "¡Hola! Soy Clippie" : clippyMessage;
 
 	const gif = spawning
 		? CLIPPY_SPAWN_GIF
@@ -39,27 +108,90 @@ export default function Clippy() {
 					? CLIPPY_READING_GIF
 					: clippyMood === CLIPPY_MOOD.DOUBLECLICK
 						? CLIPPY_DOUBLECLICK_GIF
-						: clippyMessage
+						: hayHint || spawnMessageVisible
 							? CLIPPY_TALK_GIF
 							: CLIPPY_IDLE_GIF;
-	const message = spawnMessageVisible ? "¡Hola! Soy Clippie" : clippyMessage;
 
 	return (
 		<div
-			className="fixed bottom-16 right-4 flex flex-col items-end gap-1 font-win95"
+			className="fixed bottom-16 right-4 flex flex-col items-end gap-1 font-win"
 			style={{ zIndex: Z_INDEX.clippy }}
 		>
-			<AnimatePresence>
-				{message && (
+			<AnimatePresence mode="wait">
+				{spawnMessageVisible || hayHint ? (
 					<motion.div
+						key="hint"
 						initial={{ opacity: 0, scale: 0.7, y: 8 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.7, y: 8 }}
 						transition={{ type: "spring", stiffness: 320, damping: 22 }}
-						className="relative bg-[#ffffe1] text-black text-sm px-3 py-2 border border-black shadow-[2px_2px_0_0_rgba(0,0,0,0.4)] max-w-[220px] mr-2"
+						className="relative bg-[#ffffe1] text-black text-sm px-3 py-2 border border-black shadow-[2px_2px_0_0_rgba(0,0,0,0.4)] max-w-[260px] mr-2"
 					>
-						{message}
+						{mensajeHint}
 						{/* Colita del globo, apuntando al clip */}
+						<svg
+							className="absolute -bottom-[9px] right-5"
+							width="16"
+							height="10"
+							viewBox="0 0 16 10"
+						>
+							<polygon points="0,0 16,0 4,10" fill="#ffffe1" stroke="black" strokeWidth="1" />
+						</svg>
+					</motion.div>
+				) : (
+					<motion.div
+						key="chat"
+						initial={{ opacity: 0, scale: 0.7, y: 8 }}
+						animate={{ opacity: 1, scale: 1, y: 0 }}
+						exit={{ opacity: 0, scale: 0.7, y: 8 }}
+						transition={{ type: "spring", stiffness: 320, damping: 22 }}
+						className="relative bg-[#ffffe1] border border-black shadow-[2px_2px_0_0_rgba(0,0,0,0.4)] mr-2 w-[280px] flex flex-col p-2 gap-2"
+					>
+						<div
+							ref={listaRef}
+							className="text-black h-56 overflow-y-auto flex flex-col gap-1.5 text-sm select-text"
+						>
+							{mensajes.map((m, i) => (
+								<div
+									key={i}
+									className={`max-w-[90%] min-w-0 break-words ${
+										m.autor === "user"
+											? "self-end text-right text-win-navy font-semibold"
+											: "self-start text-black"
+									}`}
+								>
+									{m.autor === "bot" ? (
+										<ReactMarkdown components={MARKDOWN_COMPONENTS}>{m.texto}</ReactMarkdown>
+									) : (
+										m.texto
+									)}
+								</div>
+							))}
+							{enviando && <div className="self-start text-gray-500 italic">escribiendo...</div>}
+						</div>
+
+						<div className="flex items-center gap-1 border-t border-black/30 pt-1.5">
+							<input
+								type="text"
+								value={chatInput}
+								onChange={(e) => setChatInput(e.target.value)}
+								onKeyDown={handleKeyDown}
+								disabled={enviando}
+								placeholder="Preguntá algo sobre Marcos..."
+								maxLength={300}
+								className="min-w-0 flex-1 bg-transparent text-sm text-black outline-none placeholder:text-black/40"
+							/>
+							<button
+								onClick={preguntar}
+								disabled={enviando}
+								className="shrink-0 text-lg leading-none disabled:opacity-40"
+								aria-label="Enviar pregunta"
+							>
+								➤
+							</button>
+						</div>
+
+						{/* Colita del globo, igual que en el hint -- misma identidad visual */}
 						<svg
 							className="absolute -bottom-[9px] right-5"
 							width="16"
@@ -73,9 +205,8 @@ export default function Clippy() {
 			</AnimatePresence>
 
 			<div
-				className="w-28 h-28 flex items-center justify-center text-8xl select-none cursor-pointer"
-				onClick={toggleChatbot}
-				title="Preguntale algo a Clippie"
+				className="w-28 h-28 flex items-center justify-center text-8xl select-none"
+				title="Clippie"
 			>
 				<img
 					key={
@@ -83,7 +214,7 @@ export default function Clippy() {
 							? "spawn"
 							: clippyMood !== CLIPPY_MOOD.IDLE
 								? clippyMood
-								: clippyMessage
+								: hayHint
 									? "talk"
 									: "idle"
 					}

@@ -12,12 +12,12 @@ Portfolio personal con estética Windows 95: un "escritorio" con ventanas arrast
 
 ## Rutas
 
-| Ruta         | Qué es                                                    |
-| ------------ | ----------------------------------------------------------- |
-| `/`          | Escritorio principal (o `MobileHome` en mobile)              |
-| `/fotos`     | Galería de fotos                                             |
-| `/tasktrack` | Landing del proyecto TaskTrack                               |
-| `/bookmark`  | Landing del proyecto BookMark                                |
+| Ruta         | Qué es                                          |
+| ------------ | ----------------------------------------------- |
+| `/`          | Escritorio principal (o `MobileHome` en mobile) |
+| `/fotos`     | Galería de fotos                                |
+| `/tasktrack` | Landing del proyecto TaskTrack                  |
+| `/bookmark`  | Landing del proyecto BookMark                   |
 
 El proyecto **TavioCoin** no tiene ruta propia: se abre como una ventana más desde el escritorio (`ProjectsWindow` → `ProjectModal`), con un botón de conectar wallet + claim del token directamente en el modal (`project.isWeb3` en `src/data/projects.js`).
 

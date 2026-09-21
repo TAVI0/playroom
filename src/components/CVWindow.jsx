@@ -31,13 +31,13 @@ export default function CVWindow({ open, onClose, initialPos }) {
 						x: { type: "tween", duration: 0 },
 						y: { type: "tween", duration: 0 },
 					}}
-					className="win95-window fixed w-[92vw] p-[3px] font-win95 select-none"
+					className="win-window fixed w-[92vw] p-[3px] font-win select-none"
 					style={{ top: 0, left: 0, maxWidth: WINDOW_WIDTH, zIndex: Z_INDEX.desktopWindow }}
 					{...windowHoverHint}
 				>
 					{/* Barra de título */}
 					<div
-						className="win95-titlebar cursor-move"
+						className="win-titlebar cursor-move"
 						onMouseDown={handleMouseDown}
 						onMouseEnter={() => {
 							setClippyMood(CLIPPY_MOOD.IDLE);
@@ -52,26 +52,26 @@ export default function CVWindow({ open, onClose, initialPos }) {
 							<span aria-hidden>📄</span> Marcos Tavio CV.pdf - Visor
 						</span>
 						<div className="flex items-center gap-[2px]">
-							<button onClick={onClose} className="win95-title-btn">
+							<button onClick={onClose} className="win-title-btn">
 								_
 							</button>
-							<span className="win95-title-btn">□</span>
-							<button onClick={onClose} className="win95-title-btn">
+							<span className="win-title-btn">□</span>
+							<button onClick={onClose} className="win-title-btn">
 								×
 							</button>
 						</div>
 					</div>
 
 					{/* Barra de menú, como un visor de verdad */}
-					<div className="bg-win95-face px-2 py-1 flex gap-3 text-xs border-b border-win95-dark">
+					<div className="bg-win-face px-2 py-1 flex gap-3 text-xs border-b border-win-dark">
 						<span>Archivo</span>
 						<span>Ver</span>
 						<span>Ventana</span>
 					</div>
 
 					{/* Contenido: "página" del visor */}
-					<div className="bg-win95-face p-2">
-						<div className="win95-inset bg-white" style={{ height: WINDOW_HEIGHT - 140 }}>
+					<div className="bg-win-face p-2">
+						<div className="win-inset bg-white" style={{ height: WINDOW_HEIGHT - 140 }}>
 							<iframe
 								src={`${CV_PATH}#toolbar=0&navpanes=0`}
 								title="Vista previa del CV"
@@ -95,7 +95,7 @@ export default function CVWindow({ open, onClose, initialPos }) {
 								setClippyMessage(READING_HINT);
 							}}
 							onClick={triggerCVDownload}
-							className="win95-btn px-4 py-1 text-sm font-win95"
+							className="win-btn px-4 py-1 text-sm font-win"
 						>
 							Descargar
 						</a>

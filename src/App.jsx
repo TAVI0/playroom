@@ -28,7 +28,7 @@ export default function App() {
 				// WindowsProvider porque ProjectModal (Clippy hints) lo consume.
 				<MobileHome />
 			) : (
-				<div className="h-screen overflow-hidden bg-win95-desktop text-gray-900 font-win95 flex flex-col">
+				<div className="h-screen overflow-hidden bg-win-desktop text-gray-900 font-win flex flex-col">
 					<div className="flex-1 overflow-y-auto pb-14">
 						<Routes>
 							<Route path="/" element={<Home />} />

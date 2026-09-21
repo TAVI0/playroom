@@ -71,31 +71,27 @@ export default function ProjectsWindow({ initialPos }) {
 							x: { type: "tween", duration: 0 },
 							y: { type: "tween", duration: 0 },
 						}}
-						className="win95-window fixed w-[92vw] p-[3px] font-win95 select-none"
+						className="win-window fixed w-[92vw] p-[3px] font-win select-none"
 						style={{ top: 0, left: 0, maxWidth: WINDOW_WIDTH, zIndex: Z_INDEX.desktopWindow }}
 						onClick={() => setSelected(null)}
 					>
-						<div
-							className="win95-titlebar cursor-move"
-							onMouseDown={handleMouseDown}
-							{...hoverHint}
-						>
+						<div className="win-titlebar cursor-move" onMouseDown={handleMouseDown} {...hoverHint}>
 							<span className="flex items-center gap-1 truncate">
 								<span aria-hidden>📁</span> Proyectos
 							</span>
 							<div className="flex items-center gap-[2px]">
-								<button onClick={closeProjects} className="win95-title-btn">
+								<button onClick={closeProjects} className="win-title-btn">
 									_
 								</button>
-								<span className="win95-title-btn">□</span>
-								<button onClick={closeProjects} className="win95-title-btn">
+								<span className="win-title-btn">□</span>
+								<button onClick={closeProjects} className="win-title-btn">
 									×
 								</button>
 							</div>
 						</div>
 
 						{/* Barra de menú */}
-						<div className="bg-win95-face px-2 py-1 flex gap-3 text-xs border-b border-win95-dark">
+						<div className="bg-win-face px-2 py-1 flex gap-3 text-xs border-b border-win-dark">
 							<span>Archivo</span>
 							<span>Edición</span>
 							<span>Ver</span>
@@ -104,7 +100,7 @@ export default function ProjectsWindow({ initialPos }) {
 
 						{/* Contenido: grilla de íconos */}
 						<div
-							className="win95-inset bg-white m-2 p-4 grid grid-cols-3 sm:grid-cols-4 gap-6 min-h-[280px] content-start"
+							className="win-inset bg-white m-2 p-4 grid grid-cols-3 sm:grid-cols-4 gap-6 min-h-[280px] content-start"
 							onClick={(e) => e.stopPropagation()}
 						>
 							{projects.map((project) => (
@@ -121,7 +117,7 @@ export default function ProjectsWindow({ initialPos }) {
 										setClippyMessage(null);
 									}}
 									className={`flex flex-col items-center gap-1 p-2 rounded-sm text-center ${
-										selected === project.name ? "bg-win95-navy text-white" : "text-black"
+										selected === project.name ? "bg-win-navy text-white" : "text-black"
 									}`}
 								>
 									<div className="w-14 h-14 overflow-hidden rounded-sm">
@@ -131,13 +127,13 @@ export default function ProjectsWindow({ initialPos }) {
 											className="w-full h-full object-cover"
 										/>
 									</div>
-									<span className="text-xs font-win95 leading-tight">{project.name}</span>
+									<span className="text-xs font-win leading-tight">{project.name}</span>
 								</button>
 							))}
 						</div>
 
 						{/* Barra de estado */}
-						<div className="win95-inset bg-win95-face mx-2 mb-2 px-2 py-1 text-xs">
+						<div className="win-inset bg-win-face mx-2 mb-2 px-2 py-1 text-xs">
 							{projects.length} objeto(s)
 						</div>
 					</motion.div>

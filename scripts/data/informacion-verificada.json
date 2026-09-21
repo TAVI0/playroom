@@ -15,7 +15,15 @@
 		"frameworksYLibrerias": ["Spring Boot", "Spring Security", "React", "Hibernate", "MyBatis"],
 		"basesDeDatos": ["MySQL", "PostgreSQL", "Oracle", "MongoDB"],
 		"seguridad": ["JWT", "Keycloak/OIDC (OpenID Connect)"],
-		"herramientas": ["Postman", "Git", "Bitbucket", "Jira", "Confluence", "Sonar/JaCoCo", "Dynatrace"],
+		"herramientas": [
+			"Postman",
+			"Git",
+			"Bitbucket",
+			"Jira",
+			"Confluence",
+			"Sonar/JaCoCo",
+			"Dynatrace"
+		],
 		"buildTools": ["Maven", "Gradle"],
 		"mensajeria": ["Kafka"],
 		"servidoresYCicd": ["Jenkins", "Apache Tomcat", "Docker", "OpenShift"],
@@ -28,7 +36,8 @@
 			"puesto": "Software Developer",
 			"periodo": "Febrero 2026 – Agosto 2026",
 			"logros": [
-				"Eliminó una dependencia interna cercana a deprecación en la API externa de partners, reemplazándola por una implementación propia con MyBatis directo contra Oracle, sin perder funcionalidad.",
+				"Diseñó y desarrolló de punta a punta una API REST para que clientes externos gestionen el estado de líneas en volumen (cientos/miles por request), con adopción estable en producción por múltiples partners.",
+				"Eliminó una dependencia interna cercana a deprecación en esa API, reemplazándola por una implementación propia y desacoplada (MyBatis directo contra Oracle), sin downtime ni pérdida de funcionalidad.",
 				"Detectó un cuello de botella en el endpoint principal (13,88s): implementó cacheo con Caffeine y lo bajó a 5,3ms (~2.600x más rápido).",
 				"Mantuvo las APIs actualizadas frente a cambios en microservicios asociados, evitando roturas downstream.",
 				"Remedió vulnerabilidades de Spring Security en múltiples servicios."

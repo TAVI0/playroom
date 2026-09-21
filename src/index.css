@@ -3,54 +3,106 @@
 @tailwind utilities;
 
 @layer components {
-	/* Bisel "hacia afuera" clásico de Win95: botones, ventanas, tarjetas */
-	.win95-raised {
-		box-shadow:
-			inset -1px -1px 0 0 theme("colors.win95.darker"),
-			inset 1px 1px 0 0 theme("colors.win95.light"),
-			inset -2px -2px 0 0 theme("colors.win95.dark"),
-			inset 2px 2px 0 0 theme("colors.win95.light2");
+	/* Botones estilo XP: rounded, gradiente vertical claro->oscuro, borde fino */
+	.win-raised {
+		border-radius: 3px;
+		border: 1px solid #8c8c7f;
+		background: linear-gradient(180deg, #fefefe 0%, #ece9d8 45%, #d9d5c4 55%, #ece9d8 100%);
+		box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.7);
 	}
 
 	/* Bisel "hacia adentro": paneles de contenido, inputs, taskbar hundido */
-	.win95-inset {
-		box-shadow:
-			inset -1px -1px 0 0 theme("colors.win95.light"),
-			inset 1px 1px 0 0 theme("colors.win95.darker"),
-			inset -2px -2px 0 0 theme("colors.win95.light2"),
-			inset 2px 2px 0 0 theme("colors.win95.dark");
+	.win-inset {
+		border-radius: 2px;
+		border: 1px solid #7f9db9;
+		box-shadow: inset 1px 1px 3px 0 rgba(0, 0, 0, 0.25);
 	}
 
-	/* Botón estilo Win95: sube al reposo, se hunde al presionar */
-	.win95-btn {
-		@apply win95-raised bg-win95-face text-black active:win95-inset;
+	/* Botón estilo XP: sube al reposo, se hunde y tiñe de azul al presionar */
+	.win-btn {
+		@apply win-raised bg-win-face text-black transition-colors;
 	}
-	.win95-btn:active {
-		@apply win95-inset;
+	.win-btn:hover {
+		border-color: theme("colors.win.navylight");
+	}
+	.win-btn:active {
+		background: linear-gradient(180deg, #bcd2f7 0%, #99bced 60%, #bcd2f7 100%);
+		box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.35);
 		transform: translate(1px, 1px);
 	}
 
 	/* Botón "presionado" persistente (taskbar activa) */
-	.win95-btn-pressed {
-		@apply win95-inset bg-win95-face text-black;
+	.win-btn-pressed {
+		border-radius: 3px;
+		border: 1px solid theme("colors.win.navy");
+		background: linear-gradient(180deg, #bcd2f7 0%, #99bced 60%, #bcd2f7 100%);
+		box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.35);
 		transform: translate(1px, 1px);
 	}
 
-	.win95-window {
-		@apply win95-raised bg-win95-face;
+	/* Ventana: esquinas superiores redondeadas como el chrome de XP, con
+	   sombra hacia afuera en vez del bisel pixelado de Win95. overflow:hidden
+	   para que la titlebar (adentro) respete el redondeado del borde. */
+	.win-window {
+		@apply bg-win-face;
+		border-radius: 8px 8px 3px 3px;
+		border: 1px solid theme("colors.win.navy");
+		box-shadow: 0 4px 18px 0 rgba(0, 0, 0, 0.4);
+		overflow: hidden;
 	}
 
-	.win95-titlebar {
-		@apply flex items-center justify-between bg-gradient-to-r from-win95-navy to-win95-navylight
-      px-1 py-[3px] text-white font-bold text-sm select-none;
+	/* Titlebar: gradiente azul XP con brillo superior, no el flat navy de Win95 */
+	.win-titlebar {
+		@apply flex items-center justify-between px-2 py-[4px] text-white font-bold text-sm select-none;
+		background: linear-gradient(
+			180deg,
+			#3d95ff 0%,
+			#1c72f0 8%,
+			theme("colors.win.navy") 40%,
+			#0044c4 92%,
+			#0038a8 100%
+		);
 	}
 
-	.win95-title-btn {
-		@apply win95-raised flex items-center justify-center w-[18px] h-[16px]
-      bg-win95-face text-black text-[10px] leading-none font-bold active:win95-inset;
+	/* Botones _ / □ / × de la titlebar: redondeados, con relieve. El ULTIMO
+	   (siempre el de cerrar, por convencion de las 3 en fila) se tiñe de rojo
+	   -- asi no hace falta tocar cada componente para marcarlo aparte. */
+	.win-title-btn {
+		@apply flex items-center justify-center w-[20px] h-[19px]
+      text-white text-[11px] leading-none font-bold;
+		border-radius: 3px;
+		border: 1px solid rgba(255, 255, 255, 0.55);
+		background: linear-gradient(180deg, #6fb3ff, theme("colors.win.navylight") 60%, #2a7ce0);
+	}
+	.win-title-btn:active {
+		filter: brightness(0.85);
+		transform: translate(1px, 1px);
+	}
+	.win-titlebar .win-title-btn:last-child {
+		background: linear-gradient(180deg, #f5978c, theme("colors.win.close") 55%, #b3121f);
+		border-color: rgba(255, 255, 255, 0.7);
+	}
+
+	/* Boton "Inicio" de la taskbar (siempre el primer link/boton de la nav):
+	   pildora verde con esquina derecha redondeada, como el Start de XP. */
+	nav > a.win-btn:first-child {
+		border-radius: 3px 14px 14px 3px;
+		border: 1px solid #1f5c0c;
+		background: linear-gradient(
+			180deg,
+			#8de25b 0%,
+			theme("colors.win.start") 45%,
+			#2d6e17 55%,
+			#4d9f2e 100%
+		);
+		color: white;
+		text-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
+	}
+	nav > a.win-btn:first-child:hover {
+		filter: brightness(1.08);
 	}
 }
 
 body {
-	font-family: "Tahoma", "MS Sans Serif", "Segoe UI", sans-serif;
+	font-family: "Tahoma", "Segoe UI", "Verdana", sans-serif;
 }

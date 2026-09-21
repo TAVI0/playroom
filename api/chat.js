@@ -32,7 +32,9 @@ function estaLimitado(ip) {
 }
 
 function similaridadCoseno(a, b) {
-	let dot = 0, normA = 0, normB = 0;
+	let dot = 0,
+		normA = 0,
+		normB = 0;
 	for (let i = 0; i < a.length; i++) {
 		dot += a[i] * b[i];
 		normA += a[i] * a[i];
@@ -55,17 +57,28 @@ async function embeddingDePregunta(texto) {
 	return data.data[0].embedding;
 }
 
-// topK alto (6 de 12 chunks totales) a proposito: el corpus es chico, el
-// costo extra de contexto es insignificante, y evita el problema real que
-// se vio en produccion -- preguntas genericas tipo "las empresas donde
-// trabajo" dejaban afuera algun chunk de trabajo con topK=3 (ver
-// Fase4-Aprendizajes.md, seccion recall@k, para el mismo fenomeno medido).
+// topK=6 de 16 chunks totales. Antes hacia falta un topK mas alto (8) para
+// compensar que los chunks de experiencia mezclaban identidad + detalle
+// tecnico en uno solo, diluyendo el embedding (ver Fase4-Aprendizajes.md).
+// Con el split identidad/detalle, los 4 chunks "trabajo en X" quedan
+// agrupados en el top-4 del ranking para preguntas genericas de experiencia
+// (confirmado empiricamente: scores 0.48-0.36, bien por encima del resto) --
+// topK=6 alcanza con margen de sobra, sin mandar contexto de mas al modelo.
 function buscarChunksRelevantes(embeddingPregunta, topK = 6) {
-	return embeddingsData.chunks
+	const rankeados = embeddingsData.chunks
 		.map((c) => ({ texto: c.texto, score: similaridadCoseno(embeddingPregunta, c.embedding) }))
-		.sort((a, b) => b.score - a.score)
-		.slice(0, topK)
-		.map((c) => c.texto);
+		.sort((a, b) => b.score - a.score);
+
+	// Log de diagnostico: que trajo el retrieval y con que score, para poder
+	// ver en consola (local o "vercel logs" en produccion) exactamente que
+	// contexto le llega al modelo, en vez de adivinar por que responde mal.
+	console.log(`Retrieval trajo ${rankeados.length} candidatos, usando top-${topK}:`);
+	rankeados.forEach((c, i) => {
+		const marca = i < topK ? "OK " : "n/a"; // fuera del top-k elegido
+		console.log(`  [${marca}] score=${c.score.toFixed(4)} ${c.texto.slice(0, 80)}`);
+	});
+
+	return rankeados.slice(0, topK).map((c) => c.texto);
 }
 
 const SYSTEM_PROMPT = `Sos un asistente que responde preguntas SOLO sobre Marcos Tavio: su experiencia laboral, formacion, skills tecnicos y proyectos personales, en base a la informacion que se te da como contexto.
@@ -74,7 +87,8 @@ Reglas estrictas:
 - Respondé UNICAMENTE en base al contexto provisto. Si la pregunta no se puede responder con ese contexto, decí que no tenés esa informacion.
 - Si te preguntan algo que no tiene relacion con Marcos Tavio (temas generales, otras personas, pedidos de codigo, etc.), rechazá amablemente y redirigí a preguntar sobre Marcos.
 - Se breve: maximo 3-4 oraciones por respuesta.
-- Hablá en tercera persona sobre Marcos ("Marcos trabajo en...", no "yo trabaje en...").`;
+- Hablá en tercera persona sobre Marcos ("Marcos trabajo en...", no "yo trabaje en...").
+- Cuando listes experiencia laboral o proyectos, ordená SIEMPRE del mas reciente al mas antiguo (orden cronologico descendente), nunca al reves.`;
 
 export default async function handler(req, res) {
 	if (req.method !== "POST") {
@@ -93,7 +107,9 @@ export default async function handler(req, res) {
 		return res.status(400).json({ error: "Falta el campo 'pregunta'." });
 	}
 	if (pregunta.length > MAX_LARGO_PREGUNTA) {
-		return res.status(400).json({ error: `La pregunta no puede superar los ${MAX_LARGO_PREGUNTA} caracteres.` });
+		return res
+			.status(400)
+			.json({ error: `La pregunta no puede superar los ${MAX_LARGO_PREGUNTA} caracteres.` });
 	}
 
 	try {
@@ -113,10 +129,12 @@ export default async function handler(req, res) {
 				max_tokens: 250,
 				temperature: 0,
 				system: SYSTEM_PROMPT,
-				messages: [{
-					role: "user",
-					content: `Contexto sobre Marcos Tavio:\n${contexto}\n\nPregunta: ${pregunta}`,
-				}],
+				messages: [
+					{
+						role: "user",
+						content: `Contexto sobre Marcos Tavio:\n${contexto}\n\nPregunta: ${pregunta}`,
+					},
+				],
 			}),
 		});
 

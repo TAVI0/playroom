@@ -23,25 +23,25 @@ export default function WelcomeWindow({ open, onClose, initialPos }) {
 						x: { type: "tween", duration: 0 },
 						y: { type: "tween", duration: 0 },
 					}}
-					className="win95-window fixed w-[92vw] p-[3px] font-win95 select-none"
+					className="win-window fixed w-[92vw] p-[3px] font-win select-none"
 					style={{ top: 0, left: 0, maxWidth: WINDOW_WIDTH, zIndex: Z_INDEX.desktopWindow }}
 				>
-					<div className="win95-titlebar cursor-move" onMouseDown={handleMouseDown} {...hoverHint}>
+					<div className="win-titlebar cursor-move" onMouseDown={handleMouseDown} {...hoverHint}>
 						<span className="flex items-center gap-1 truncate">
 							<span aria-hidden>🖥️</span> Bienvenido.exe
 						</span>
 						<div className="flex items-center gap-[2px]">
-							<button onClick={onClose} className="win95-title-btn">
+							<button onClick={onClose} className="win-title-btn">
 								_
 							</button>
-							<span className="win95-title-btn">□</span>
-							<button onClick={onClose} className="win95-title-btn">
+							<span className="win-title-btn">□</span>
+							<button onClick={onClose} className="win-title-btn">
 								×
 							</button>
 						</div>
 					</div>
 
-					<div className="bg-win95-face p-4">
+					<div className="bg-win-face p-4">
 						<h1 className="text-2xl font-bold text-black mb-2 text-center">{welcome.title}</h1>
 						<p className="text-gray-800 text-center text-sm">{welcome.text}</p>
 					</div>

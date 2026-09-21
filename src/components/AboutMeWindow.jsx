@@ -23,26 +23,26 @@ export default function AboutMeWindow({ open, onClose, initialPos }) {
 						x: { type: "tween", duration: 0 },
 						y: { type: "tween", duration: 0 },
 					}}
-					className="win95-window fixed w-[92vw] p-[3px] font-win95 select-none"
+					className="win-window fixed w-[92vw] p-[3px] font-win select-none"
 					style={{ top: 0, left: 0, maxWidth: WINDOW_WIDTH, zIndex: Z_INDEX.desktopWindow }}
 				>
-					<div className="win95-titlebar cursor-move" onMouseDown={handleMouseDown} {...hoverHint}>
+					<div className="win-titlebar cursor-move" onMouseDown={handleMouseDown} {...hoverHint}>
 						<span className="flex items-center gap-1 truncate">
 							<span aria-hidden>🧑‍💻</span> AboutMe.exe
 						</span>
 						<div className="flex items-center gap-[2px]">
-							<button onClick={onClose} className="win95-title-btn">
+							<button onClick={onClose} className="win-title-btn">
 								_
 							</button>
-							<span className="win95-title-btn">□</span>
-							<button onClick={onClose} className="win95-title-btn">
+							<span className="win-title-btn">□</span>
+							<button onClick={onClose} className="win-title-btn">
 								×
 							</button>
 						</div>
 					</div>
 
-					<div className="bg-win95-face p-3">
-						<div className="win95-inset bg-white text-black p-3">
+					<div className="bg-win-face p-3">
+						<div className="win-inset bg-white text-black p-3">
 							<p className="font-bold text-base mb-1">{aboutMe.name}</p>
 							<p className="text-sm text-gray-700 mb-3">{aboutMe.role}</p>
 

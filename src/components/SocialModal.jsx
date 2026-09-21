@@ -27,12 +27,12 @@ export default function SocialModal({ open, onClose, initialPos }) {
 						x: { type: "tween", duration: 0 },
 						y: { type: "tween", duration: 0 },
 					}}
-					className="win95-window fixed w-80 p-[3px] font-win95 select-none"
+					className="win-window fixed w-80 p-[3px] font-win select-none"
 					style={{ top: 0, left: 0, zIndex: Z_INDEX.desktopWindow }}
 				>
 					{/* Barra de título */}
 					<div
-						className="win95-titlebar cursor-move"
+						className="win-titlebar cursor-move"
 						onMouseDown={handleMouseDown}
 						onDoubleClick={(e) => e.preventDefault()}
 						{...hoverHint}
@@ -41,21 +41,21 @@ export default function SocialModal({ open, onClose, initialPos }) {
 							<span aria-hidden>🌐</span> Redes
 						</span>
 						<div className="flex items-center gap-[2px]">
-							<button onClick={onClose} className="win95-title-btn">
+							<button onClick={onClose} className="win-title-btn">
 								_
 							</button>
-							<button className="win95-title-btn" tabIndex={-1}>
+							<button className="win-title-btn" tabIndex={-1}>
 								□
 							</button>
-							<button onClick={onClose} className="win95-title-btn">
+							<button onClick={onClose} className="win-title-btn">
 								×
 							</button>
 						</div>
 					</div>
 
 					{/* Contenido */}
-					<div className="bg-win95-face p-3">
-						<div className="win95-inset bg-white text-black p-3">
+					<div className="bg-win-face p-3">
+						<div className="win-inset bg-white text-black p-3">
 							<p className="font-bold mb-2">Podés encontrarme en:</p>
 							<ul className="space-y-1.5">
 								{links.map((link) => (
@@ -66,7 +66,7 @@ export default function SocialModal({ open, onClose, initialPos }) {
 											href={link.href}
 											target="_blank"
 											rel="noreferrer"
-											className="text-win95-navy underline hover:text-win95-navylight"
+											className="text-win-navy underline hover:text-win-navylight"
 										>
 											{link.value}
 										</a>

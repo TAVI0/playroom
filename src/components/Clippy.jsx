@@ -70,8 +70,11 @@ export default function Clippy() {
 		if (!pregunta || enviando) return;
 
 		// Historial ANTES de agregar la pregunta nueva -- el server la recibe
-		// aparte en "pregunta", no hace falta duplicarla en el array.
-		const historial = mensajes;
+		// aparte en "pregunta", no hace falta duplicarla en el array. Se filtra
+		// el saludo inicial hardcodeado (MENSAJE_INICIAL): nunca lo genero el
+		// modelo, mandarlo como si fuera un AIMessage real infla la traza de
+		// LangSmith con un mensaje que el LLM nunca produjo.
+		const historial = mensajes.filter((m) => m !== MENSAJE_INICIAL);
 		setMensajes((prev) => [...prev, { autor: "user", texto: pregunta }]);
 		setChatInput("");
 		setEnviando(true);

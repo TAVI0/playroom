@@ -21,6 +21,7 @@ import { ChatAnthropic } from "@langchain/anthropic";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { tool } from "@langchain/core/tools";
 import { HumanMessage, AIMessage, SystemMessage } from "@langchain/core/messages";
+import { awaitAllCallbacks } from "@langchain/core/callbacks/promises";
 import { z } from "zod";
 import embeddingsData from "./_data/embeddings.json" with { type: "json" };
 import infoVerificada from "../scripts/data/informacion-verificada.json" with { type: "json" };
@@ -197,6 +198,13 @@ export default async function handler(req, res) {
 
 		const resultado = await agente.invoke({ messages: mensajes });
 		const ultimoMensaje = resultado.messages[resultado.messages.length - 1];
+
+		// Vercel puede congelar/matar el proceso apenas se manda la response --
+		// el envio de la traza a LangSmith es async en segundo plano y puede
+		// quedar cortado a mitad de camino si no se espera explicitamente antes
+		// de retornar. Confirmado: la 1ra pregunta a veces se traceaba (cold
+		// start le daba mas margen), las siguientes no.
+		await awaitAllCallbacks();
 
 		return res.status(200).json({ respuesta: ultimoMensaje.content });
 	} catch (error) {

@@ -1,19 +1,34 @@
 /**
- * Funcion serverless de Vercel: chatbot RAG sobre el CV/proyectos de Marcos Tavio.
+ * Funcion serverless de Vercel: agente de LangChain.js sobre el CV/proyectos
+ * de Marcos Tavio, con 2 tools -- el modelo decide cual (o ninguna) usar.
  *
- * Flujo por request: rate limit por IP -> embedding de la pregunta (Voyage) ->
- * similaridad coseno contra api/_data/embeddings.json (precalculado offline,
- * ver scripts/generar-embeddings.mjs) -> contexto + pregunta a Claude Haiku
- * con system prompt acotado -> respuesta.
+ * Flujo por request: rate limit por IP -> se arma el historial + pregunta,
+ * SIN correr retrieval de antemano -> el agente (createReactAgent) decide:
+ *   - buscar_contexto_semantico: RAG por similaridad (embeddings de Voyage +
+ *     coseno contra api/_data/embeddings.json), para preguntas puntuales.
+ *   - listar_experiencia_completa: lee la fuente de verdad directo, para
+ *     preguntas de listado/conteo exacto donde el RAG no garantiza traer
+ *     TODO (ver Fase4-Aprendizajes.md, el bug de CFOTech afuera del top-k).
+ * Antes el RAG corria SIEMPRE antes de invocar al modelo, aunque terminara
+ * usando la otra tool -- desperdiciando la llamada a Voyage y metiendo
+ * contexto de mas en el prompt sin necesidad. Convertirlo en tool deja que
+ * el agente decida si hace falta, no que se corra a ciegas.
  *
  * Env vars necesarias en Vercel: ANTHROPIC_API_KEY, VOYAGE_API_KEY.
  */
 
+import { ChatAnthropic } from "@langchain/anthropic";
+import { createReactAgent } from "@langchain/langgraph/prebuilt";
+import { tool } from "@langchain/core/tools";
+import { HumanMessage, AIMessage, SystemMessage } from "@langchain/core/messages";
+import { z } from "zod";
 import embeddingsData from "./_data/embeddings.json" with { type: "json" };
+import infoVerificada from "../scripts/data/informacion-verificada.json" with { type: "json" };
 
 const MAX_PREGUNTAS_POR_VENTANA = 5;
 const VENTANA_MS = 10 * 60 * 1000; // 10 minutos
 const MAX_LARGO_PREGUNTA = 300; // caracteres -- evita que alguien mande un ensayo
+const MAX_TURNOS_HISTORIAL = 6; // ultimos N mensajes (no todo el historial, acota tokens)
 
 // Rate limit en memoria: vive mientras la funcion serverless este "caliente"
 // (Vercel puede reciclarla entre invocaciones -- no es 100% a prueba de abuso
@@ -43,7 +58,7 @@ function similaridadCoseno(a, b) {
 	return dot / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
-async function embeddingDePregunta(texto) {
+async function embeddingDeTexto(texto) {
 	const resp = await fetch("https://api.voyageai.com/v1/embeddings", {
 		method: "POST",
 		headers: {
@@ -57,38 +72,99 @@ async function embeddingDePregunta(texto) {
 	return data.data[0].embedding;
 }
 
-// topK=6 de 16 chunks totales. Antes hacia falta un topK mas alto (8) para
-// compensar que los chunks de experiencia mezclaban identidad + detalle
-// tecnico en uno solo, diluyendo el embedding (ver Fase4-Aprendizajes.md).
-// Con el split identidad/detalle, los 4 chunks "trabajo en X" quedan
-// agrupados en el top-4 del ranking para preguntas genericas de experiencia
-// (confirmado empiricamente: scores 0.48-0.36, bien por encima del resto) --
-// topK=6 alcanza con margen de sobra, sin mandar contexto de mas al modelo.
-function buscarChunksRelevantes(embeddingPregunta, topK = 6) {
+// topK=6 de 16 chunks totales -- ver Fase4-Aprendizajes.md para el porque
+// de este numero (split identidad/detalle de la experiencia laboral).
+function buscarChunksRelevantes(embeddingConsulta, topK = 6) {
 	const rankeados = embeddingsData.chunks
-		.map((c) => ({ texto: c.texto, score: similaridadCoseno(embeddingPregunta, c.embedding) }))
+		.map((c) => ({ texto: c.texto, score: similaridadCoseno(embeddingConsulta, c.embedding) }))
 		.sort((a, b) => b.score - a.score);
 
-	// Log de diagnostico: que trajo el retrieval y con que score, para poder
-	// ver en consola (local o "vercel logs" en produccion) exactamente que
-	// contexto le llega al modelo, en vez de adivinar por que responde mal.
 	console.log(`Retrieval trajo ${rankeados.length} candidatos, usando top-${topK}:`);
 	rankeados.forEach((c, i) => {
-		const marca = i < topK ? "OK " : "n/a"; // fuera del top-k elegido
+		const marca = i < topK ? "OK " : "n/a";
 		console.log(`  [${marca}] score=${c.score.toFixed(4)} ${c.texto.slice(0, 80)}`);
 	});
 
 	return rankeados.slice(0, topK).map((c) => c.texto);
 }
 
-const SYSTEM_PROMPT = `Sos un asistente que responde preguntas SOLO sobre Marcos Tavio: su experiencia laboral, formacion, skills tecnicos y proyectos personales, en base a la informacion que se te da como contexto.
+// RAG como TOOL, no como paso automatico -- el agente la llama solo si la
+// pregunta necesita contexto semantico (la mayoria de los casos puntuales:
+// skills, un proyecto especifico, un logro concreto).
+const buscarContextoSemantico = tool(
+	async ({ consulta }) => {
+		console.log(`TOOL llamada: buscar_contexto_semantico("${consulta}")`);
+		const embedding = await embeddingDeTexto(consulta);
+		const chunks = buscarChunksRelevantes(embedding);
+		console.log("TOOL resultado: chunks devueltos =", chunks.length);
+		return chunks.map((c) => `- ${c}`).join("\n");
+	},
+	{
+		name: "buscar_contexto_semantico",
+		description:
+			"Busca informacion relevante sobre Marcos Tavio (experiencia, skills, proyectos, " +
+			"educacion) por similaridad semantica. Usar para preguntas puntuales o especificas. " +
+			"NO usar para pedidos de listado completo -- para eso existe listar_experiencia_completa.",
+		schema: z.object({
+			consulta: z.string().describe("La consulta a buscar, en texto natural"),
+		}),
+	},
+);
+
+// Tool determinística: en vez de confiar en que el retrieval por similaridad
+// "adivine bien" para preguntas de listado ("todas las empresas", "cuantos
+// trabajos tuvo"), esta tool lee la fuente de verdad DIRECTO -- sin pasar
+// por embeddings, sin riesgo de que algun chunk quede afuera del top-k.
+const listarExperienciaCompleta = tool(
+	async () => {
+		console.log("TOOL llamada: listar_experiencia_completa (sin argumentos)");
+		const lista = infoVerificada.experiencia.map(
+			(j) => `${j.empresa} — ${j.puesto} (${j.periodo})`,
+		);
+		console.log("TOOL resultado:", lista);
+		return JSON.stringify(lista);
+	},
+	{
+		name: "listar_experiencia_completa",
+		description:
+			"Devuelve la lista COMPLETA y exacta de TODAS las empresas donde trabajó Marcos, " +
+			"con puesto y período, ordenada de la más reciente a la más antigua. Usar SIEMPRE " +
+			"que la pregunta pida un listado, un conteo total, o mencione 'todas'/'todos' " +
+			"las empresas/experiencias -- no confiar solo en buscar_contexto_semantico para ese caso.",
+		schema: z.object({}),
+	},
+);
+
+const SYSTEM_PROMPT = `Sos un asistente que responde preguntas SOLO sobre Marcos Tavio: su experiencia laboral, formacion, skills tecnicos y proyectos personales, usando las tools disponibles para buscar la informacion que necesites -- no asumas nada que no venga de una tool.
 
 Reglas estrictas:
-- Respondé UNICAMENTE en base al contexto provisto. Si la pregunta no se puede responder con ese contexto, decí que no tenés esa informacion.
+- Antes de responder algo factico sobre Marcos, llamá a la tool que corresponda (buscar_contexto_semantico para preguntas puntuales, listar_experiencia_completa para listados/conteos completos). Si ya tenés lo necesario en el historial de la conversacion, no hace falta repetir la busqueda.
 - Si te preguntan algo que no tiene relacion con Marcos Tavio (temas generales, otras personas, pedidos de codigo, etc.), rechazá amablemente y redirigí a preguntar sobre Marcos.
 - Se breve: maximo 3-4 oraciones por respuesta.
 - Hablá en tercera persona sobre Marcos ("Marcos trabajo en...", no "yo trabaje en...").
-- Cuando listes experiencia laboral o proyectos, ordená SIEMPRE del mas reciente al mas antiguo (orden cronologico descendente), nunca al reves.`;
+- Cuando listes experiencia laboral o proyectos, ordená SIEMPRE del mas reciente al mas antiguo.`;
+
+const model = new ChatAnthropic({
+	model: "claude-haiku-4-5",
+	temperature: 0,
+	maxTokens: 250,
+	apiKey: process.env.ANTHROPIC_API_KEY,
+});
+
+const agente = createReactAgent({
+	llm: model,
+	tools: [buscarContextoSemantico, listarExperienciaCompleta],
+});
+
+// Convierte el historial que manda el cliente ({autor, texto}) a mensajes
+// de LangChain. Se acota a los ultimos N turnos -- no mandar TODA la
+// conversacion siempre, para no inflar tokens sin limite en charlas largas.
+function historialAMensajesLangchain(historial) {
+	if (!Array.isArray(historial)) return [];
+	return historial
+		.slice(-MAX_TURNOS_HISTORIAL)
+		.map((m) => (m.autor === "user" ? new HumanMessage(m.texto) : new AIMessage(m.texto)));
+}
 
 export default async function handler(req, res) {
 	if (req.method !== "POST") {
@@ -102,7 +178,7 @@ export default async function handler(req, res) {
 		});
 	}
 
-	const { pregunta } = req.body || {};
+	const { pregunta, historial } = req.body || {};
 	if (!pregunta || typeof pregunta !== "string" || !pregunta.trim()) {
 		return res.status(400).json({ error: "Falta el campo 'pregunta'." });
 	}
@@ -113,36 +189,16 @@ export default async function handler(req, res) {
 	}
 
 	try {
-		const embeddingPregunta = await embeddingDePregunta(pregunta);
-		const chunks = buscarChunksRelevantes(embeddingPregunta);
-		const contexto = chunks.map((c) => `- ${c}`).join("\n");
+		const mensajes = [
+			new SystemMessage(SYSTEM_PROMPT),
+			...historialAMensajesLangchain(historial),
+			new HumanMessage(pregunta),
+		];
 
-		const respuestaAnthropic = await fetch("https://api.anthropic.com/v1/messages", {
-			method: "POST",
-			headers: {
-				"x-api-key": process.env.ANTHROPIC_API_KEY,
-				"anthropic-version": "2023-06-01",
-				"content-type": "application/json",
-			},
-			body: JSON.stringify({
-				model: "claude-haiku-4-5",
-				max_tokens: 250,
-				temperature: 0,
-				system: SYSTEM_PROMPT,
-				messages: [
-					{
-						role: "user",
-						content: `Contexto sobre Marcos Tavio:\n${contexto}\n\nPregunta: ${pregunta}`,
-					},
-				],
-			}),
-		});
+		const resultado = await agente.invoke({ messages: mensajes });
+		const ultimoMensaje = resultado.messages[resultado.messages.length - 1];
 
-		if (!respuestaAnthropic.ok) {
-			throw new Error(`Anthropic API error: ${respuestaAnthropic.status}`);
-		}
-		const data = await respuestaAnthropic.json();
-		return res.status(200).json({ respuesta: data.content[0].text });
+		return res.status(200).json({ respuesta: ultimoMensaje.content });
 	} catch (error) {
 		console.error("Error en /api/chat:", error);
 		return res.status(500).json({ error: "Error interno, intentá de nuevo." });

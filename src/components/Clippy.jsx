@@ -69,6 +69,9 @@ export default function Clippy() {
 		const pregunta = chatInput.trim();
 		if (!pregunta || enviando) return;
 
+		// Historial ANTES de agregar la pregunta nueva -- el server la recibe
+		// aparte en "pregunta", no hace falta duplicarla en el array.
+		const historial = mensajes;
 		setMensajes((prev) => [...prev, { autor: "user", texto: pregunta }]);
 		setChatInput("");
 		setEnviando(true);
@@ -77,7 +80,7 @@ export default function Clippy() {
 			const resp = await fetch("/api/chat", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ pregunta }),
+				body: JSON.stringify({ pregunta, historial }),
 			});
 			const data = await resp.json();
 			const texto = resp.ok ? data.respuesta : data.error || "Algo salió mal, intentá de nuevo.";

@@ -6,6 +6,12 @@ export const links = [
 		icon: "💼",
 	},
 	{
+		label: "GitHub",
+		value: "TAVI0",
+		href: "https://github.com/TAVI0",
+		icon: "🐙",
+	},
+	{
 		label: "Instagram",
 		value: "@marcos_tavio",
 		href: "https://instagram.com/marcos_tavio",

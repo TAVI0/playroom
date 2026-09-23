@@ -131,11 +131,6 @@ export default function ProjectsWindow({ initialPos }) {
 								</button>
 							))}
 						</div>
-
-						{/* Barra de estado */}
-						<div className="win-inset bg-win-face mx-2 mb-2 px-2 py-1 text-xs">
-							{projects.length} objeto(s)
-						</div>
 					</motion.div>
 				)}
 			</AnimatePresence>

@@ -15,7 +15,7 @@ const TOP_ALIGN_Y = 24; // misma altura que la ventana "Bienvenido.exe"
 const WINDOW_GAP = 42; // separación vertical entre ventanas apiladas
 const ABOUT_ALIGN_Y = TOP_ALIGN_Y + WINDOWS.welcome.height + WINDOW_GAP; // debajo de Bienvenido
 const PROJECTS_ALIGN_Y = ABOUT_ALIGN_Y + WINDOWS.aboutMe.height + WINDOW_GAP; // debajo de AboutMe
-const SKILLS_ALIGN_Y = TOP_ALIGN_Y + WINDOWS.social.height + WINDOW_GAP; // debajo de Redes
+const SOCIAL_ALIGN_Y = TOP_ALIGN_Y + WINDOWS.cv.height + WINDOW_GAP; // debajo de CV
 
 export default function Navbar() {
 	const [showContact, setShowContact] = useState(false);
@@ -127,10 +127,7 @@ export default function Navbar() {
 			<SocialModal
 				open={showSocial}
 				onClose={toggleSocial}
-				initialPos={{
-					x: Math.max(window.innerWidth - WINDOWS.social.width - 24, 16),
-					y: TOP_ALIGN_Y,
-				}}
+				initialPos={{ x: 24, y: SOCIAL_ALIGN_Y }}
 			/>
 			<CVWindow open={showCV} onClose={toggleCV} initialPos={{ x: 24, y: TOP_ALIGN_Y }} />
 			<ProjectsWindow
@@ -144,7 +141,7 @@ export default function Navbar() {
 				onClose={toggleSkills}
 				initialPos={{
 					x: Math.max(window.innerWidth - WINDOWS.skills.width - 24, 16),
-					y: SKILLS_ALIGN_Y,
+					y: TOP_ALIGN_Y,
 				}}
 			/>
 			<AboutMeWindow

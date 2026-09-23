@@ -4,15 +4,35 @@
 // CashTrack todavia usa placeholder de TaskTrack -- reemplazar cuando haya assets propios.
 export const projects = [
 	{
+		name: "Clippie",
+		icon: "📎",
+		// Clippie se explica a sí mismo con sus propios gifs, no necesita assets propios.
+		image: "https://media.tenor.com/mFNhFzLedEsAAAAj/clippy.gif",
+		images: [
+			"https://media.tenor.com/mFNhFzLedEsAAAAj/clippy.gif",
+			"https://media.tenor.com/XrB7ZHYe6gQAAAAj/clippy.gif",
+		],
+		description:
+			"El propio asistente de este portfolio: un agente conversacional con LangChain.js que responde preguntas sobre la experiencia, skills y proyectos de Marcos, con RAG sobre el CV como una tool más del agente y memoria de la conversación. Tiene su propio modo pantalla completa en /chat.",
+		tech: [
+			"LangChain.js (agente con memoria + tools)",
+			"RAG sobre CV/proyectos como tool del agente",
+			"Claude Haiku (Anthropic API)",
+			"LangSmith (trazas del agente)",
+			"Vercel Serverless Functions (api/chat.js)",
+		],
+		href: "/chat",
+		hoverMessage: "¡Soy yo! ¿Querés hablar?",
+	},
+	{
 		name: "CashTrack",
 		icon: "🧾",
-		// TODO: imagenes placeholder de TaskTrack -- reemplazar cuando haya capturas reales de CashTrack.
-		image: "https://imgur.com/cmXKarM.png",
+		image: "/projects/cashtrack/icon.png",
 		images: [
-			"https://imgur.com/cmXKarM.png",
-			"https://imgur.com/cmXKarM.png",
-			"https://imgur.com/cmXKarM.png",
-			"https://imgur.com/cmXKarM.png",
+			"/projects/cashtrack/1.jpeg",
+			"/projects/cashtrack/2.jpeg",
+			"/projects/cashtrack/3.jpeg",
+			"/projects/cashtrack/4.jpeg",
 		],
 		description:
 			"App móvil offline-first para capturar comprobantes de pago argentinos (recibos, transferencias, MercadoPago) y extraer sus datos automáticamente con Claude usando visión, armando un registro financiero propio sin carga manual.",

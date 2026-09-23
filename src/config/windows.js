@@ -5,7 +5,7 @@ export const WINDOWS = {
 	welcome: { width: 640, height: 168 },
 	aboutMe: { width: 500, height: 284 },
 	social: { width: 320, height: 196 },
-	skills: { width: 320, height: 140 },
+	skills: { width: 360, height: 390 },
 	projects: { width: 640, height: 460 },
 	cv: { width: 460, height: 600 },
 };

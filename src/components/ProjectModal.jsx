@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ethers } from "ethers";
 import { useDraggableWindow } from "../hooks/useDraggableWindow";
@@ -242,14 +243,22 @@ export default function ProjectModal({ project, open, onClose, clickPos }) {
 
 							{project.href && (
 								<div className="flex justify-end mt-3">
-									<a
-										href={project.href}
-										target="_blank"
-										rel="noreferrer"
-										className="win-btn px-4 py-1 text-sm font-win"
-									>
-										Ir a la app
-									</a>
+									{project.href.startsWith("/") ? (
+										// Ruta interna (ej. /chat): navegación de router, no recarga
+										// la página -- así Clippy conserva su animación de transición.
+										<Link to={project.href} className="win-btn px-4 py-1 text-sm font-win">
+											Ir a la app
+										</Link>
+									) : (
+										<a
+											href={project.href}
+											target="_blank"
+											rel="noreferrer"
+											className="win-btn px-4 py-1 text-sm font-win"
+										>
+											Ir a la app
+										</a>
+									)}
 								</div>
 							)}
 						</div>

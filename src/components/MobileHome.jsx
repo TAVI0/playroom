@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { welcome, aboutMe } from "../data/content";
 import { projects } from "../data/projects";
-import { skills } from "../data/skills";
+import { skillCategories } from "../data/skills";
 import { links } from "../data/social";
 import { CV_PATH, CV_FILENAME } from "../data/cv";
 import ProjectModal from "./ProjectModal";
@@ -75,13 +75,22 @@ export default function MobileHome() {
 
 			{/* 5. Skills */}
 			<MobileSection title="Skills" icon="🧰">
-				<div className="win-inset bg-white p-3 grid grid-cols-3 gap-4">
-					{skills.map((skill) => (
-						<div key={skill.name} className="flex flex-col items-center gap-1 p-1 text-center">
-							<span className="text-3xl" aria-hidden>
-								{skill.icon}
-							</span>
-							<span className="text-xs font-win leading-tight text-black">{skill.name}</span>
+				<div className="win-inset bg-white p-3 space-y-3">
+					{skillCategories.map((category) => (
+						<div key={category.label}>
+							<p className="text-xs font-bold text-gray-600 mb-1.5 flex items-center gap-1">
+								<span aria-hidden>{category.icon}</span> {category.label}
+							</p>
+							<div className="flex flex-wrap gap-1.5">
+								{category.items.map((item) => (
+									<span
+										key={item}
+										className="win-inset bg-win-face px-2 py-0.5 text-xs font-win text-black"
+									>
+										{item}
+									</span>
+								))}
+							</div>
 						</div>
 					))}
 				</div>

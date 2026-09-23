@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { skills } from "../data/skills";
+import { skillCategories } from "../data/skills";
 import { useDraggableWindow } from "../hooks/useDraggableWindow";
 import { useHoverHint } from "../hooks/useHoverHint";
 import { WINDOWS, Z_INDEX } from "../config/windows";
@@ -47,21 +47,26 @@ export default function SkillsWindow({ open, onClose, initialPos }) {
 						<span>Ver</span>
 					</div>
 
-					{/* Contenido: grilla de íconos */}
-					<div className="win-inset bg-white m-2 p-3 grid grid-cols-3 gap-4 min-h-[140px] content-start">
-						{skills.map((skill) => (
-							<div key={skill.name} className="flex flex-col items-center gap-1 p-1 text-center">
-								<span className="text-3xl" aria-hidden>
-									{skill.icon}
-								</span>
-								<span className="text-xs font-win leading-tight text-black">{skill.name}</span>
+					{/* Contenido: categorías con las skills como chips, no una grilla de íconos --
+					    se lee mas y se ve menos "cargado" que un ícono grande por skill. */}
+					<div className="win-inset bg-white m-2 p-3 space-y-3">
+						{skillCategories.map((category) => (
+							<div key={category.label}>
+								<p className="text-xs font-bold text-gray-600 mb-1.5 flex items-center gap-1">
+									<span aria-hidden>{category.icon}</span> {category.label}
+								</p>
+								<div className="flex flex-wrap gap-1.5">
+									{category.items.map((item) => (
+										<span
+											key={item}
+											className="win-inset bg-win-face px-2 py-0.5 text-xs font-win text-black"
+										>
+											{item}
+										</span>
+									))}
+								</div>
 							</div>
 						))}
-					</div>
-
-					{/* Barra de estado */}
-					<div className="win-inset bg-win-face mx-2 mb-2 px-2 py-1 text-xs">
-						{skills.length} objeto(s)
 					</div>
 				</motion.div>
 			)}

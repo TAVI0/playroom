@@ -5,6 +5,7 @@ import PhotoGalleryPage from "./components/PhotoGalleryPage";
 import Home from "./components/Home";
 import TaskTrackPage from "./components/TaskTrackPage";
 import BookMarkPage from "./components/BookMarkPage";
+import ChatPage from "./components/ChatPage";
 import MobileHome from "./components/MobileHome";
 import { wakeTaskTrackBackend } from "./wakeTaskTrack";
 import { WindowsProvider } from "./context/WindowsContext";
@@ -35,6 +36,7 @@ export default function App() {
 							<Route path="/fotos" element={<PhotoGalleryPage />} />
 							<Route path="/tasktrack" element={<TaskTrackPage />} />
 							<Route path="/bookmark" element={<BookMarkPage />} />
+							<Route path="/chat" element={<ChatPage />} />
 						</Routes>
 					</div>
 

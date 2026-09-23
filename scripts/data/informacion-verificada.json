@@ -9,7 +9,13 @@
 		"linkedin": "https://www.linkedin.com/in/mtavio/",
 		"github": "https://github.com/TAVI0"
 	},
-	"perfilProfesional": "Desarrollador Backend con experiencia en microservicios y APIs REST usando Java, Spring Boot, SQL, Docker y Hibernate. Enfocado en performance y estabilidad con impacto medible (ej. tiempos de respuesta de segundos a milisegundos), aplicando patrones de diseño y principios SOLID. Incorpora herramientas de IA (Claude Code, SDD) al flujo de trabajo diario.",
+	"perfilProfesional": "Desarrollador Backend con experiencia en microservicios y APIs REST usando Java, Spring Boot, SQL, Docker y Hibernate. Enfocado en performance y estabilidad con impacto medible (ej. tiempos de respuesta de segundos a milisegundos), aplicando patrones de diseño y principios SOLID. En transición hacia AI Engineer / GenAI Backend, integrando LLMs a producto (agentes, RAG, tool use) sobre esa base de backend senior -- no solo como usuario de herramientas de IA (Claude Code, SDD) en el flujo de trabajo diario, sino como quien construye los sistemas de IA en sí.",
+	"busquedaLaboral": {
+		"roles": ["Backend", "Fullstack (principalmente backend)", "AI Engineer"],
+		"modalidad": ["Remoto", "Híbrido", "Presencial"],
+		"ubicacion": "Buenos Aires, Argentina",
+		"disponibilidad": "Inmediata"
+	},
 	"habilidadesTecnicas": {
 		"lenguajes": ["Java (8/11/21/25)", "JavaScript", "Node.js", "Python", "Solidity"],
 		"frameworksYLibrerias": ["Spring Boot", "Spring Security", "React", "Hibernate", "MyBatis"],
@@ -28,7 +34,26 @@
 		"mensajeria": ["Kafka"],
 		"servidoresYCicd": ["Jenkins", "Apache Tomcat", "Docker", "OpenShift"],
 		"cloud": ["AWS (EC2, S3, Lambda) -- proyectos personales"],
-		"metodologias": ["Scrum", "Kanban"]
+		"metodologias": ["Scrum", "Kanban"],
+		"iaYLlm": [
+			"Anthropic SDK (Claude)",
+			"OpenAI SDK",
+			"LangChain / LangGraph",
+			"Model Context Protocol (MCP) -- cliente y servidor propio",
+			"RAG (chunking, embeddings, retrieval)",
+			"Prompt engineering (few-shot, chain-of-thought, structured output)",
+			"Tool use / agentes (ReAct, tool calling en loop)",
+			"LangSmith (observability y tracing de agentes)",
+			"Voyage AI (embeddings)"
+		]
+	},
+	"formacionIAEngineering": {
+		"estado": "En continuo aprendizaje de nuevas tecnologias",
+		"resumen": "Roadmap propio de AI Engineering / GenAI Backend, para sumar a su perfil de backend senior la mirada de quien construye sistemas de IA en producción, no solo quien los usa como herramienta. Completó las fases de Fundamentos de LLMs, Prompt Engineering aplicado, APIs de modelos en profundidad (streaming, retries, prompt caching), Embeddings y RAG, y Agentes y orquestación (tool-use en loop, comparación LangChain/LangGraph vs SDK nativo, servidor MCP propio). En curso: Evals y calidad de sistemas de IA.",
+		"aplicadoEnProyectosPersonales": [
+			"Clippy (el asistente de este portfolio): agente conversacional con LangChain.js, memoria de la conversación, y RAG sobre el CV/proyectos expuesto como una tool más del agente (no como paso automático antes de cada respuesta).",
+			"CashTrack: extracción automática de datos de comprobantes de pago argentinos usando la API de Claude con visión."
+		]
 	},
 	"experiencia": [
 		{

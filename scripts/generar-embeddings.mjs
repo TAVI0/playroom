@@ -55,7 +55,19 @@ function chunkearCV() {
 			`Mensajeria: ${h.mensajeria.join(", ")}. ` +
 			`Servidores y CI/CD: ${h.servidoresYCicd.join(", ")}. ` +
 			`Cloud: ${h.cloud.join(", ")}. ` +
-			`Metodologias: ${h.metodologias.join(", ")}.`,
+			`Metodologias: ${h.metodologias.join(", ")}. ` +
+			`IA y LLMs: ${h.iaYLlm.join(", ")}.`,
+	);
+
+	// Misma logica identidad/detalle que las experiencias laborales (ver
+	// comentario mas abajo): un chunk corto para "sabe de IA/hizo un curso de
+	// IA Engineering" y uno largo con el detalle real, para no diluir el
+	// embedding del resumen corto con texto tecnico largo.
+	const ia = cv.formacionIAEngineering;
+	chunks.push(`Formacion en AI Engineering de Marcos Tavio: ${ia.estado}. ${ia.resumen}`);
+	chunks.push(
+		`Como aplico Marcos Tavio lo aprendido de AI Engineering en proyectos personales: ` +
+			ia.aplicadoEnProyectosPersonales.join(" "),
 	);
 
 	// Cada experiencia laboral se separa en DOS chunks, no uno solo:
@@ -98,10 +110,15 @@ async function chunkearProyectos() {
 }
 
 async function chunkearSkills() {
+	// skills.js exporta categorias (skillCategories), no una lista plana --
+	// se aplanan aca para el chunk de texto, la categoria queda en el propio
+	// texto para no perder ese agrupamiento en el retrieval.
 	const url = pathToFileURL(path.join(__dirname, "../src/data/skills.js"));
 	const mod = await import(url.href);
-	const nombres = mod.skills.map((s) => s.name).join(", ");
-	return [`Stack tecnologico general de Marcos Tavio: ${nombres}.`];
+	const porCategoria = mod.skillCategories
+		.map((c) => `${c.label}: ${c.items.join(", ")}`)
+		.join(". ");
+	return [`Stack tecnologico general de Marcos Tavio, por categoria: ${porCategoria}.`];
 }
 
 async function generarEmbeddings(textos) {

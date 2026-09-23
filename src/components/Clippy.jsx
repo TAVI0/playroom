@@ -7,7 +7,7 @@ import { Z_INDEX } from "../config/windows";
 import { CLIPPY_MOOD } from "../data/clippyMoods";
 import { CV_PATH, CV_FILENAME } from "../data/cv";
 
-// TODO: reemplazar por GIFs/imagen propios de Clippie cuando estén listos.
+// TODO: reemplazar por GIFs/imagen propios de Clippy cuando estén listos.
 const CLIPPY_IDLE_GIF = "https://media.tenor.com/mFNhFzLedEsAAAAj/clippy.gif";
 const CLIPPY_TALK_GIF = "https://media.tenor.com/XrB7ZHYe6gQAAAAj/clippy.gif";
 const CLIPPY_SHOVEL_GIF = "https://media.tenor.com/ZWWKdW6k-VUAAAAj/clippy.gif";
@@ -142,7 +142,7 @@ export default function Clippy() {
 		if (e.key === "Enter") preguntar();
 	};
 
-	const mensajeHint = spawnMessageVisible ? "¡Hola! Soy Clippie" : clippyMessage;
+	const mensajeHint = spawnMessageVisible ? "¡Hola! Soy Clippy" : clippyMessage;
 
 	const gif = spawning
 		? CLIPPY_SPAWN_GIF
@@ -305,9 +305,9 @@ export default function Clippy() {
 						layoutId="clippy-avatar"
 						transition={{ type: "spring", stiffness: 200, damping: 24 }}
 						className="w-48 h-48 flex items-center justify-center select-none"
-						title="Clippie"
+						title="Clippy"
 					>
-						<img key={imgKey} src={gif} alt="Clippie" className="w-full h-full object-contain" />
+						<img key={imgKey} src={gif} alt="Clippy" className="w-full h-full object-contain" />
 					</motion.div>
 				) : (
 					<motion.div
@@ -322,7 +322,7 @@ export default function Clippy() {
 							title="Agrandar el chat"
 							aria-label="Agrandar el chat"
 						>
-							<img key={imgKey} src={gif} alt="Clippie" className="w-full h-full object-contain" />
+							<img key={imgKey} src={gif} alt="Clippy" className="w-full h-full object-contain" />
 						</Link>
 					</motion.div>
 				)}

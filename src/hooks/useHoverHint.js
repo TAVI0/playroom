@@ -1,7 +1,7 @@
 import { useWindows } from "../context/useWindows";
 import { CLIPPY_MOOD } from "../data/clippyMoods";
 
-// Handlers de hover para mostrarle un mensaje a Clippie mientras el mouse
+// Handlers de hover para mostrarle un mensaje a Clippy mientras el mouse
 // está sobre un elemento (p.ej. la barra de título de una ventana), y
 // limpiarlo al salir. Evita repetir el mismo par onMouseEnter/onMouseLeave
 // en cada ventana draggable.

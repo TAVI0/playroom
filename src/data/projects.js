@@ -4,9 +4,9 @@
 // CashTrack todavia usa placeholder de TaskTrack -- reemplazar cuando haya assets propios.
 export const projects = [
 	{
-		name: "Clippie",
+		name: "Clippy",
 		icon: "📎",
-		// Clippie se explica a sí mismo con sus propios gifs, no necesita assets propios.
+		// Clippy se explica a sí mismo con sus propios gifs, no necesita assets propios.
 		image: "https://media.tenor.com/mFNhFzLedEsAAAAj/clippy.gif",
 		images: [
 			"https://media.tenor.com/mFNhFzLedEsAAAAj/clippy.gif",

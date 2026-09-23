@@ -36,9 +36,10 @@ export default defineConfig([
 		},
 	},
 	{
-		// Funciones serverless de Vercel: corren en Node, no en el navegador.
-		// Sin esto, ESLint no reconocia `process`/`fetch` como globals validos.
-		files: ["api/**/*.js"],
+		// Funciones serverless de Vercel (y lib/, la logica que importan) corren
+		// en Node, no en el navegador. Sin esto, ESLint no reconocia
+		// `process`/`fetch` como globals validos.
+		files: ["api/**/*.js", "lib/**/*.js"],
 		languageOptions: {
 			globals: globals.node,
 		},

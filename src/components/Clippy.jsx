@@ -1,70 +1,24 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import { useWindows } from "../context/useWindows";
 import { Z_INDEX } from "../config/windows";
 import { CLIPPY_MOOD } from "../data/clippyMoods";
-import { CV_PATH, CV_FILENAME } from "../data/cv";
+import { useClippyChat } from "../hooks/useClippyChat";
+import {
+	CLIPPY_IDLE_GIF,
+	CLIPPY_TALK_GIF,
+	CLIPPY_SHOVEL_GIF,
+	CLIPPY_DOWNLOAD_GIF,
+	CLIPPY_READING_GIF,
+	CLIPPY_DOUBLECLICK_GIF,
+	CLIPPY_SPAWN_GIF,
+	MARKDOWN_COMPONENTS,
+} from "../data/clippyChat";
 
-// TODO: reemplazar por GIFs/imagen propios de Clippy cuando estén listos.
-const CLIPPY_IDLE_GIF = "https://media.tenor.com/mFNhFzLedEsAAAAj/clippy.gif";
-const CLIPPY_TALK_GIF = "https://media.tenor.com/XrB7ZHYe6gQAAAAj/clippy.gif";
-const CLIPPY_SHOVEL_GIF = "https://media.tenor.com/ZWWKdW6k-VUAAAAj/clippy.gif";
-const CLIPPY_DOWNLOAD_GIF = "https://media.tenor.com/JqkNT68NBxgAAAAj/clippy.gif";
-const CLIPPY_READING_GIF = "https://media.tenor.com/63k8-8UipCwAAAAj/clippy.gif";
-const CLIPPY_DOUBLECLICK_GIF = "https://media.tenor.com/4HO0la4zISkAAAAj/clippy.gif";
-const CLIPPY_SPAWN_GIF = "https://media.tenor.com/V1tphaHNhW4AAAAj/clippy.gif";
 const SPAWN_GIF_DURATION = 550; // dura exactamente un loop del gif, para que no se repita
 const SPAWN_MESSAGE_DURATION = SPAWN_GIF_DURATION + 3000; // el saludo queda 3s más en pantalla
-
-const MENSAJE_INICIAL = {
-	autor: "bot",
-	texto: "¡Hola! Preguntame lo que quieras sobre la experiencia, skills o proyectos de Marcos.",
-};
-
-// El link "cv:download" que devuelve la tool descargar_cv (ver lib/tools.js)
-// no navega a ningun lado -- dispara la descarga del PDF instantaneamente,
-// igual que el boton de CVWindow, con el mismo flash de Clippy.
-function LinkDescargaCV({ children }) {
-	const { triggerCVDownload } = useWindows();
-
-	const handleClick = (e) => {
-		e.preventDefault();
-		const a = document.createElement("a");
-		a.href = CV_PATH;
-		a.download = CV_FILENAME;
-		a.click();
-		triggerCVDownload();
-	};
-
-	return (
-		<button
-			onClick={handleClick}
-			className="font-bold text-win-navy underline decoration-2 hover:opacity-80"
-		>
-			{children}
-		</button>
-	);
-}
-
-// El bot responde en markdown (negrita, listas) -- overrides compactos para
-// que entren bien en el panel chico, sin los margenes grandes de un articulo.
-const MARKDOWN_COMPONENTS = {
-	p: ({ children }) => <p className="mb-1 last:mb-0">{children}</p>,
-	ul: ({ children }) => <ul className="list-disc pl-4 my-1 space-y-0.5">{children}</ul>,
-	ol: ({ children }) => <ol className="list-decimal pl-4 my-1 space-y-0.5">{children}</ol>,
-	li: ({ children }) => <li>{children}</li>,
-	strong: ({ children }) => <strong className="font-bold">{children}</strong>,
-	a: ({ href, children }) =>
-		href === "#cv-download" ? (
-			<LinkDescargaCV>{children}</LinkDescargaCV>
-		) : (
-			<a href={href} target="_blank" rel="noreferrer" className="underline">
-				{children}
-			</a>
-		),
-};
 
 export default function Clippy() {
 	// clippyMessage/clippyMood: SOLO para hover-hints de otras ventanas (ver
@@ -77,10 +31,8 @@ export default function Clippy() {
 	const [spawning, setSpawning] = useState(true);
 	const [spawnMessageVisible, setSpawnMessageVisible] = useState(true);
 
-	const [mensajes, setMensajes] = useState([MENSAJE_INICIAL]);
-	const [chatInput, setChatInput] = useState("");
-	const [enviando, setEnviando] = useState(false);
-	const listaRef = useRef(null);
+	const { mensajes, chatInput, setChatInput, enviando, listaRef, preguntar, handleKeyDown } =
+		useClippyChat();
 
 	// El hint de otra ventana (hover) pisa momentaneamente al chat -- solo
 	// mientras dura el hover, el propio useHoverHint lo limpia al salir. En
@@ -104,43 +56,6 @@ export default function Clippy() {
 	useEffect(() => {
 		listaRef.current?.scrollTo({ top: listaRef.current.scrollHeight });
 	}, [mensajes, enviando, hayHint]);
-
-	const preguntar = async () => {
-		const pregunta = chatInput.trim();
-		if (!pregunta || enviando) return;
-
-		// Historial ANTES de agregar la pregunta nueva -- el server la recibe
-		// aparte en "pregunta", no hace falta duplicarla en el array. Se filtra
-		// el saludo inicial hardcodeado (MENSAJE_INICIAL): nunca lo genero el
-		// modelo, mandarlo como si fuera un AIMessage real infla la traza de
-		// LangSmith con un mensaje que el LLM nunca produjo.
-		const historial = mensajes.filter((m) => m !== MENSAJE_INICIAL);
-		setMensajes((prev) => [...prev, { autor: "user", texto: pregunta }]);
-		setChatInput("");
-		setEnviando(true);
-
-		try {
-			const resp = await fetch("/api/chat", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ pregunta, historial }),
-			});
-			const data = await resp.json();
-			const texto = resp.ok ? data.respuesta : data.error || "Algo salió mal, intentá de nuevo.";
-			setMensajes((prev) => [...prev, { autor: "bot", texto }]);
-		} catch {
-			setMensajes((prev) => [
-				...prev,
-				{ autor: "bot", texto: "No pude conectarme al chat. Intentá de nuevo en un rato." },
-			]);
-		} finally {
-			setEnviando(false);
-		}
-	};
-
-	const handleKeyDown = (e) => {
-		if (e.key === "Enter") preguntar();
-	};
 
 	const mensajeHint = spawnMessageVisible ? "¡Hola! Soy Clippy" : clippyMessage;
 

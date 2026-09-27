@@ -5,6 +5,7 @@ import { skillCategories } from "../data/skills";
 import { links } from "../data/social";
 import { CV_PATH, CV_FILENAME } from "../data/cv";
 import ProjectModal from "./ProjectModal";
+import MobileClippyChat from "./MobileClippyChat";
 
 // Panel estático estilo XP (sin drag, sin botones de control): a diferencia de
 // las ventanas de desktop, en mobile son solo secciones fijas de una página
@@ -42,7 +43,10 @@ export default function MobileHome() {
 				</div>
 			</MobileSection>
 
-			{/* 3. Botón de descarga de CV */}
+			{/* 3. Chat con Clippy */}
+			<MobileClippyChat />
+
+			{/* 4. Botón de descarga de CV */}
 			<a
 				href={CV_PATH}
 				download={CV_FILENAME}
@@ -51,7 +55,7 @@ export default function MobileHome() {
 				📄 Descargar CV
 			</a>
 
-			{/* 4. Proyectos */}
+			{/* 5. Proyectos */}
 			<MobileSection title="Proyectos" icon="📁">
 				<div className="win-inset bg-white p-3 grid grid-cols-3 gap-4">
 					{projects.map((project) => (
@@ -73,7 +77,7 @@ export default function MobileHome() {
 				</div>
 			</MobileSection>
 
-			{/* 5. Skills */}
+			{/* 6. Skills */}
 			<MobileSection title="Skills" icon="🧰">
 				<div className="win-inset bg-white p-3 space-y-3">
 					{skillCategories.map((category) => (
@@ -96,7 +100,7 @@ export default function MobileHome() {
 				</div>
 			</MobileSection>
 
-			{/* 6. Redes */}
+			{/* 7. Redes */}
 			<MobileSection title="Redes" icon="🌐">
 				<div className="win-inset bg-white text-black p-3">
 					<p className="font-bold mb-2">Podés encontrarme en:</p>

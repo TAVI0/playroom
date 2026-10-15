@@ -42,3 +42,30 @@ npm run preview  # preview del build
 npm run lint     # ESLint
 npm run format   # Prettier (escribe los cambios)
 ```
+
+## Evals del agente
+
+Suite de evals del chatbot (Clippy): 20 casos en `evals/dataset.json`, repartidos en 5 categorías (`routing`, `grounding`, `formato`, `fuera_de_tema`, `multi_turno`). El runner (`evals/run.mjs`) invoca el agente directo, sin pasar por el handler HTTP ni el rate limit. Carga las variables de `.env.local`.
+
+Cada llamada gasta cuota de la API de Anthropic (y de Voyage si el caso usa el RAG), así que por defecto corre 1 vez por caso y sin juez.
+
+```bash
+npm run evals                                     # los 20 casos, 1 corrida, scoring determinístico
+npm run evals -- --only routing                   # una categoría
+npm run evals -- --only fuera-03-prompt-injection # un caso por id
+npm run evals -- --only multi_turno --pausa 20    # pausa de N segundos entre casos (evita el 429 de Voyage)
+npm run evals -- --runs 3                         # N corridas por caso (pasa solo si pasan todas)
+npm run evals -- --judge                          # suma LLM-as-judge (1 llamada extra por caso)
+```
+
+Categorías para `--only`: `routing` (5), `grounding` (5), `formato` (3), `fuera_de_tema` (4), `multi_turno` (3).
+
+Resultado por caso:
+
+- `PASS`: cumplió todos los chequeos.
+- `FAIL`: falló el scoring (regresión del agente).
+- `ERROR`: falló la infraestructura (por ejemplo, una tool lanzó una excepción). No cuenta en el porcentaje. Para repetirlo: `--only <id>`.
+
+Exit code: `0` todo PASS, `1` hay FAIL, `3` solo hubo ERROR de infra.
+
+El detalle de la última corrida queda en `evals/results/latest.json` (se sobrescribe en cada corrida).

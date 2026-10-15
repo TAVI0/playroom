@@ -15,7 +15,7 @@ on:
       - "package.json"
       - "package-lock.json"
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - "agent/**"
       - "api/**"

@@ -17,7 +17,7 @@
 		"disponibilidad": "Inmediata"
 	},
 	"habilidadesTecnicas": {
-		"lenguajes": ["Java (8/11/21/25)", "JavaScript", "Node.js", "Python", "Solidity"],
+		"lenguajes": ["Java (8/11/21/25)", "TypeScript", "Node.js", "Python", "Solidity"],
 		"frameworksYLibrerias": ["Spring Boot", "Spring Security", "React", "Hibernate", "MyBatis"],
 		"basesDeDatos": ["MySQL", "PostgreSQL", "Oracle", "MongoDB"],
 		"seguridad": ["JWT", "Keycloak/OIDC (OpenID Connect)"],

@@ -117,6 +117,6 @@
 	"_verificacionConEmbeddingsJson": {
 		"totalEmpresasEnCV": 4,
 		"empresas": ["CFOTech", "Stefanini LATAM", "Artekium Technology Studio", "Alkemy"],
-		"nota": "Las 4 experiencias SI estan presentes en api/_data/embeddings.json (confirmado con grep) -- el problema NO es de indexado. El chatbot omitio CFOTech en una respuesta real por limitacion de retrieval (top_k=3 sobre 4 chunks de trabajos casi igual de 'parecidos' a la pregunta generica 'las empresas donde trabajo') -- ver Fase4-Aprendizajes.md en el vault, seccion del proyecto playroom, para el fix aplicado."
+		"nota": "Las 4 experiencias SI estan presentes en agent/data/embeddings.json (confirmado con grep) -- el problema NO es de indexado. El chatbot omitio CFOTech en una respuesta real por limitacion de retrieval (top_k=3 sobre 4 chunks de trabajos casi igual de 'parecidos' a la pregunta generica 'las empresas donde trabajo') -- ver Fase4-Aprendizajes.md en el vault, seccion del proyecto playroom, para el fix aplicado."
 	}
 }

@@ -7,7 +7,7 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 import { embeddingDeTexto, buscarChunksRelevantes } from "./rag.js";
-import infoVerificada from "../scripts/data/informacion-verificada.json" with { type: "json" };
+import infoVerificada from "./data/informacion-verificada.json" with { type: "json" };
 
 // RAG como TOOL, no como paso automatico -- el agente la llama solo si la
 // pregunta necesita contexto semantico (la mayoria de los casos puntuales:

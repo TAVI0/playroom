@@ -1,13 +1,13 @@
 /**
  * Script offline: chunkea el CV + proyectos + skills, genera embeddings con
- * Voyage AI, y guarda todo en api/_data/embeddings.json.
+ * Voyage AI, y guarda todo en agent/data/embeddings.json.
  *
  * Se corre UNA VEZ (o cada vez que cambia el CV/proyectos), no en cada
  * request -- la funcion serverless de api/chat.js solo LEE ese JSON.
  *
  * Requiere: variable de entorno VOYAGE_API_KEY seteada (en esta terminal).
- * Correr con: node scripts/generar-embeddings.mjs
- * Preview sin gastar llamadas a Voyage: node scripts/generar-embeddings.mjs --dry-run
+ * Correr con: node agent/scripts/generar-embeddings.mjs
+ * Preview sin gastar llamadas a Voyage: node agent/scripts/generar-embeddings.mjs --dry-run
  */
 
 import { readFileSync, writeFileSync } from "node:fs";
@@ -22,14 +22,14 @@ if (!VOYAGE_API_KEY && !process.argv.includes("--dry-run")) {
 }
 
 // Fuente de verdad: el JSON verificado a mano (ver
-// scripts/data/informacion-verificada.json), NO el HTML del CV original.
+// agent/data/informacion-verificada.json), NO el HTML del CV original.
 // El HTML se scrapeaba con regex y era fragil (ver Fase4-Aprendizajes.md del
 // vault, gotcha 3: un regex de cierre balanceado se comio silenciosamente
 // las 4 experiencias laborales, sin tirar error). El JSON verificado ya paso
 // por revision humana, asi que se lee directo, sin parseo de HTML de por
 // medio -- y es el lugar donde se va a ir sumando info nueva (proyectos,
 // datos adicionales) a medida que se decida que el chatbot deberia saberla.
-const RUTA_INFO_VERIFICADA = path.join(__dirname, "data/informacion-verificada.json");
+const RUTA_INFO_VERIFICADA = path.join(__dirname, "../data/informacion-verificada.json");
 
 function chunkearCV() {
 	const cv = JSON.parse(readFileSync(RUTA_INFO_VERIFICADA, "utf-8"));
@@ -99,7 +99,7 @@ function chunkearCV() {
 
 async function chunkearProyectos() {
 	// import() dinamico exige file:// URL en Windows, no una ruta cruda C:\...
-	const url = pathToFileURL(path.join(__dirname, "../src/data/projects.js"));
+	const url = pathToFileURL(path.join(__dirname, "../../src/data/projects.js"));
 	const mod = await import(url.href);
 	return mod.projects.map(
 		(p) =>
@@ -113,7 +113,7 @@ async function chunkearSkills() {
 	// skills.js exporta categorias (skillCategories), no una lista plana --
 	// se aplanan aca para el chunk de texto, la categoria queda en el propio
 	// texto para no perder ese agrupamiento en el retrieval.
-	const url = pathToFileURL(path.join(__dirname, "../src/data/skills.js"));
+	const url = pathToFileURL(path.join(__dirname, "../../src/data/skills.js"));
 	const mod = await import(url.href);
 	const porCategoria = mod.skillCategories
 		.map((c) => `${c.label}: ${c.items.join(", ")}`)
@@ -162,7 +162,7 @@ async function main() {
 	const chunks = chunksTexto.map((texto, i) => ({ texto, embedding: embeddings[i] }));
 	chunks.forEach((c) => console.log(`  OK: ${c.texto.slice(0, 70)}...`));
 
-	const destino = path.join(__dirname, "../api/_data/embeddings.json");
+	const destino = path.join(__dirname, "../data/embeddings.json");
 	writeFileSync(destino, JSON.stringify({ modelo: "voyage-4-lite", chunks }, null, 2));
 	console.log(`\nGuardado en ${destino}`);
 }

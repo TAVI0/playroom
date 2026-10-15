@@ -1,7 +1,7 @@
 /**
  * Funcion serverless de Vercel: capa HTTP del chatbot. Toda la logica de
  * negocio (rate limit, RAG, tools, prompt, wiring del agente) vive en
- * lib/ -- este archivo solo valida el request, arma los mensajes, invoca
+ * agent/ -- este archivo solo valida el request, arma los mensajes, invoca
  * al agente, y devuelve la respuesta.
  *
  * Env vars necesarias en Vercel: ANTHROPIC_API_KEY, VOYAGE_API_KEY,
@@ -10,9 +10,9 @@
 
 import { HumanMessage, AIMessage, SystemMessage } from "@langchain/core/messages";
 import { awaitAllCallbacks } from "@langchain/core/callbacks/promises";
-import { estaLimitado, MAX_PREGUNTAS_POR_VENTANA } from "../lib/rate-limit.js";
-import { agente } from "../lib/agent.js";
-import { SYSTEM_PROMPT } from "../lib/prompts.js";
+import { estaLimitado, MAX_PREGUNTAS_POR_VENTANA } from "../agent/rate-limit.js";
+import { agente } from "../agent/agent.js";
+import { SYSTEM_PROMPT } from "../agent/prompts.js";
 
 const MAX_LARGO_PREGUNTA = 300; // caracteres -- evita que alguien mande un ensayo
 const MAX_TURNOS_HISTORIAL = 6; // ultimos N mensajes (no todo el historial, acota tokens)

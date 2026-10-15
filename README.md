@@ -43,9 +43,28 @@ npm run lint     # ESLint
 npm run format   # Prettier (escribe los cambios)
 ```
 
+## Agente (Clippy)
+
+Todo el backend del chatbot vive en `agent/`. `api/chat.js` queda afuera porque Vercel solo publica funciones serverless desde `/api`, y es un adaptador HTTP fino: valida el request, aplica el rate limit e invoca al agente.
+
+```
+api/chat.js                  # adaptador HTTP (Vercel)
+agent/
+  agent.js                   # modelo + agente LangGraph (ReAct)
+  tools.js                   # tools que el agente puede llamar
+  rag.js                     # embeddings (Voyage) + similaridad coseno
+  prompts.js                 # system prompt, separado del código
+  rate-limit.js
+  data/                      # fuente de verdad + embeddings precalculados
+  scripts/                   # generación de embeddings
+  evals/                     # dataset + runner de evals
+```
+
+Para regenerar los embeddings: `node agent/scripts/generar-embeddings.mjs` (`--dry-run` para verlos sin llamar a Voyage).
+
 ## Evals del agente
 
-Suite de evals del chatbot (Clippy): 20 casos en `evals/dataset.json`, repartidos en 5 categorías (`routing`, `grounding`, `formato`, `fuera_de_tema`, `multi_turno`). El runner (`evals/run.mjs`) invoca el agente directo, sin pasar por el handler HTTP ni el rate limit. Carga las variables de `.env.local`.
+Suite de evals del chatbot (Clippy): 20 casos en `agent/evals/dataset.json`, repartidos en 5 categorías (`routing`, `grounding`, `formato`, `fuera_de_tema`, `multi_turno`). El runner (`agent/evals/run.mjs`) invoca el agente directo, sin pasar por el handler HTTP ni el rate limit. Carga las variables de `.env.local`.
 
 Cada llamada gasta cuota de la API de Anthropic (y de Voyage si el caso usa el RAG), así que por defecto corre 1 vez por caso y sin juez.
 
@@ -68,4 +87,4 @@ Resultado por caso:
 
 Exit code: `0` todo PASS, `1` hay FAIL, `3` solo hubo ERROR de infra.
 
-El detalle de la última corrida queda en `evals/results/latest.json` (se sobrescribe en cada corrida).
+El detalle de la última corrida queda en `agent/evals/results/latest.json` (se sobrescribe en cada corrida).

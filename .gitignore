@@ -28,4 +28,4 @@ dist-ssr
 .env*
 
 # Evals
-evals/results/
+agent/evals/results/

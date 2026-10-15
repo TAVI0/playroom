@@ -9,7 +9,7 @@
 		"lint": "eslint .",
 		"format": "prettier --write .",
 		"preview": "vite preview",
-		"evals": "node --env-file=.env.local evals/run.mjs",
+		"evals": "node --env-file-if-exists=.env.local agent/evals/run.mjs",
 		"tailwind:init": "tailwindcss init -p"
 	},
 	"dependencies": {

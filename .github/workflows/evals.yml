@@ -1,0 +1,75 @@
+# Corre la suite de evals del agente (agent/evals/run.mjs) como quality gate.
+# Cada corrida gasta cuota de Anthropic y Voyage, por eso solo se dispara
+# cuando cambia algo que puede afectar al agente (filtro paths).
+#
+# Exit codes del runner: 0 todo PASS, 1 regresion (bloquea), 3 solo errores
+# de infra como un 429 (warning, no bloquea).
+
+name: evals
+
+on:
+  pull_request:
+    paths:
+      - "agent/**"
+      - "api/**"
+      - "package.json"
+      - "package-lock.json"
+  push:
+    branches: [master]
+    paths:
+      - "agent/**"
+      - "api/**"
+      - "package.json"
+      - "package-lock.json"
+  # Corrida manual desde la pestaña Actions, con opciones de la corrida completa.
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: "Corridas por caso"
+        default: "1"
+      judge:
+        description: "Sumar LLM-as-judge"
+        type: boolean
+        default: false
+
+concurrency:
+  group: evals-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Correr evals
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          VOYAGE_API_KEY: ${{ secrets.VOYAGE_API_KEY }}
+          RUNS: ${{ inputs.runs || '1' }}
+          JUDGE: ${{ inputs.judge && '--judge' || '' }}
+        run: |
+          set +e
+          npm run evals -- --runs "$RUNS" --pausa 5 $JUDGE
+          code=$?
+          if [ $code -eq 3 ]; then
+            echo "::warning::Solo errores de infra (rate limit, red), no es una regresion"
+            exit 0
+          fi
+          exit $code
+
+      - name: Subir resultados
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evals-results
+          path: agent/evals/results/latest.json
+          if-no-files-found: ignore

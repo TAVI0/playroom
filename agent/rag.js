@@ -1,12 +1,12 @@
 /**
  * RAG: embedding de un texto (Voyage) + similaridad coseno contra
- * api/_data/embeddings.json (precalculado offline, ver
- * scripts/generar-embeddings.mjs). Extraido aparte de api/chat.js para
+ * agent/data/embeddings.json (precalculado offline, ver
+ * agent/scripts/generar-embeddings.mjs). Extraido aparte de api/chat.js para
  * poder importarlo suelto en evals/tests (Fase 6) sin arrastrar la capa
  * HTTP -- no se puede testear una funcion enterrada en un handler.
  */
 
-import embeddingsData from "../api/_data/embeddings.json" with { type: "json" };
+import embeddingsData from "./data/embeddings.json" with { type: "json" };
 
 function similaridadCoseno(a, b) {
 	let dot = 0,

@@ -1,7 +1,7 @@
 /**
- * Runner de evals del agente. Invoca el agente directo (lib/agent.js), sin
+ * Runner de evals del agente. Invoca el agente directo (agent/agent.js), sin
  * pasar por el handler HTTP ni el rate limit, y puntua cada caso de
- * evals/dataset.json.
+ * agent/evals/dataset.json.
  *
  * Uso (las env vars se cargan con --env-file, ver script "evals" en package.json):
  *   npm run evals                      # todos los casos, 1 corrida, solo scoring deterministico
@@ -20,8 +20,8 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { HumanMessage, AIMessage, SystemMessage } from "@langchain/core/messages";
 import { awaitAllCallbacks } from "@langchain/core/callbacks/promises";
-import { agente } from "../lib/agent.js";
-import { SYSTEM_PROMPT } from "../lib/prompts.js";
+import { agente } from "../agent.js";
+import { SYSTEM_PROMPT } from "../prompts.js";
 
 const dataset = JSON.parse(readFileSync(new URL("./dataset.json", import.meta.url), "utf8"));
 

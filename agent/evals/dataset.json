@@ -1,5 +1,5 @@
 {
-	"_proposito": "Dataset de evals del agente Clippy. Cada caso define que tool se espera, que hechos debe contener la respuesta y que rubrica usa el LLM-as-judge. Los hechos salen de scripts/data/informacion-verificada.json (fuente de verdad), no de la memoria.",
+	"_proposito": "Dataset de evals del agente Clippy. Cada caso define que tool se espera, que hechos debe contener la respuesta y que rubrica usa el LLM-as-judge. Los hechos salen de agent/data/informacion-verificada.json (fuente de verdad), no de la memoria.",
 	"_campos": {
 		"tools_esperadas": "TODAS tienen que haberse llamado (scoring deterministico)",
 		"tools_esperadas_alguna": "al menos UNA tiene que haberse llamado",

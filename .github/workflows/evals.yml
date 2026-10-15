@@ -63,7 +63,9 @@ jobs:
           JUDGE: ${{ inputs.judge && '--judge' || '' }}
         run: |
           set +e
-          npm run evals -- --runs "$RUNS" --pausa 5 $JUDGE
+          # --pausa 20: Voyage limita los requests por minuto; con 5s
+          # seguia saltando el 429 en los casos que usan RAG.
+          npm run evals -- --runs "$RUNS" --pausa 20 $JUDGE
           code=$?
           if [ $code -eq 3 ]; then
             echo "::warning::Solo errores de infra (rate limit, red), no es una regresion"

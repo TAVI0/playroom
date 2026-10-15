@@ -54,6 +54,11 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           VOYAGE_API_KEY: ${{ secrets.VOYAGE_API_KEY }}
+          # Trazas a LangSmith en un proyecto aparte, para no mezclar las
+          # corridas de CI con el trafico real de produccion.
+          LANGSMITH_TRACING: "true"
+          LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
+          LANGSMITH_PROJECT: playroom-evals
           RUNS: ${{ inputs.runs || '1' }}
           JUDGE: ${{ inputs.judge && '--judge' || '' }}
         run: |
